@@ -54,7 +54,7 @@ export const EpisodeItem = ({ episode }: Props) => {
                     </div>
                   </AspectRatio>
                   <span className="i-material-symbols:play-arrow-rounded absolute bottom-[4px] left-[4px] m-[4px] block size-[20px] text-[#ffffff]" />
-                  {series.episodes.some((ep) => ep.premium) ? (
+                  {episode.premium ? (
                     <span className="absolute bottom-[8px] right-[4px] inline-flex items-center justify-center rounded-[4px] bg-[#1c43d1] p-[4px] text-[10px] text-[#ffffff]">
                       プレミアム
                     </span>
