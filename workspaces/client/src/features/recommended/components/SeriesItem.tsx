@@ -39,6 +39,7 @@ export const SeriesItem = ({ series }: Props) => {
                           alt={series.title}
                           className="h-auto w-full"
                           height={720}
+                          priority={false}
                           src={series.thumbnailUrl}
                           width={1280}
                         />

@@ -10,7 +10,7 @@ interface Props {
 export const AspectRatio = ({ children, ratioHeight, ratioWidth, onInView }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
-  const [isInView, setIsInView] = useState(false);
+  const [hasIntersected, setHasIntersected] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -30,14 +30,15 @@ export const AspectRatio = ({ children, ratioHeight, ratioWidth, onInView }: Pro
   }, []);
 
   useEffect(() => {
-    if (!containerRef.current || !onInView) return;
+    if (!containerRef.current || !onInView || hasIntersected) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry?.isIntersecting && !isInView) {
-          setIsInView(true);
+        if (entry?.isIntersecting) {
+          setHasIntersected(true);
           onInView();
+          observer.disconnect();
         }
       },
       {
@@ -51,12 +52,12 @@ export const AspectRatio = ({ children, ratioHeight, ratioWidth, onInView }: Pro
     return () => {
       observer.disconnect();
     };
-  }, [onInView, isInView]);
+  }, [onInView, hasIntersected]);
 
   const height = (width * ratioHeight) / ratioWidth;
 
   return (
-    <div ref={containerRef} className={`h-[${height}px] relative w-full`}>
+    <div ref={containerRef} style={{ height: `${height}px` }} className="relative w-full">
       {children}
     </div>
   );

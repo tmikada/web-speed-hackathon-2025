@@ -47,6 +47,7 @@ export const SeriesEpisodeItem = ({ episode, selected }: Props) => {
                           alt={episode.title}
                           className="h-auto w-[192px]"
                           height={108}
+                          priority={false}
                           src={episode.thumbnailUrl}
                           width={192}
                         />

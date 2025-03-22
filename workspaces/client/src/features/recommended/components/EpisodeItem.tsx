@@ -28,11 +28,11 @@ export const EpisodeItem = ({ episode }: Props) => {
   return (
     <Hoverable classNames={{ hovered: 'opacity-75' }}>
       <NavLink className="block w-full overflow-hidden" to={`/episodes/${episode.id}`}>
-        {({ isTransitioning }: { isTransitioning: boolean }) => {
+        {({ isTransitioning }) => {
           return (
             <>
-              <Flipped stagger flipId={isTransitioning ? `episode-${episode.id}` : 0}>
-                <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F] before:absolute before:inset-x-0 before:bottom-0 before:block before:h-[64px] before:bg-gradient-to-t before:from-[#212121] before:to-transparent before:content-['']">
+              <Flipped flipId={isTransitioning ? `episode-${episode.id}` : 0}>
+                <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
                   <AspectRatio 
                     ratioHeight={9} 
                     ratioWidth={16}
@@ -46,6 +46,7 @@ export const EpisodeItem = ({ episode }: Props) => {
                           alt={series.title}
                           className="h-auto w-full"
                           height={720}
+                          priority={false}
                           src={series.thumbnailUrl}
                           width={1280}
                         />
@@ -61,10 +62,7 @@ export const EpisodeItem = ({ episode }: Props) => {
                 </div>
               </Flipped>
               <div className="p-[8px]">
-                <div className="mb-[4px] text-[14px] font-bold text-[#ffffff]">
-                  <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
-                </div>
-                <div className="text-[12px] text-[#999999]">
+                <div className="text-[14px] font-bold text-[#ffffff]">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
                 </div>
               </div>

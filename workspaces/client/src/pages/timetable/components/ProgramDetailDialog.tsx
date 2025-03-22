@@ -47,8 +47,9 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
             {showProgramImage && (
               <OptimizedImage
                 alt={program.title}
-                className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+                className="h-auto w-full"
                 height={720}
+                priority={false}
                 src={program.thumbnailUrl}
                 width={1280}
               />

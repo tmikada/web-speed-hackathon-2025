@@ -55,9 +55,11 @@ export const EpisodePage = () => {
           <div className="relative w-full py-6">
             {episode.premium && user == null ? (
               <AspectRatio 
+                onInView={() => {
+                  setShowPremiumThumbnail(true);
+                }}
                 ratioHeight={9} 
                 ratioWidth={16}
-                onInView={() => setShowPremiumThumbnail(true)}
               >
                 <div className="relative size-full">
                   {showPremiumThumbnail && (
@@ -65,6 +67,7 @@ export const EpisodePage = () => {
                       alt={episode.title}
                       className="size-full object-cover"
                       height={720}
+                      priority
                       src={episode.thumbnailUrl}
                       width={1280}
                     />
@@ -90,9 +93,11 @@ export const EpisodePage = () => {
               <Suspense
                 fallback={
                   <AspectRatio 
+                    onInView={() => {
+                      setShowLoadingThumbnail(true);
+                    }}
                     ratioHeight={9} 
                     ratioWidth={16}
-                    onInView={() => setShowLoadingThumbnail(true)}
                   >
                     <div className="grid size-full">
                       {showLoadingThumbnail && (
@@ -100,6 +105,7 @@ export const EpisodePage = () => {
                           alt={episode.title}
                           className="size-full place-self-stretch object-cover [grid-area:1/-1]"
                           height={720}
+                          priority
                           src={episode.thumbnailUrl}
                           width={1280}
                         />
@@ -111,9 +117,11 @@ export const EpisodePage = () => {
                 }
               >
                 <AspectRatio 
+                  onInView={() => {
+                    setShowPlayerThumbnail(true);
+                  }}
                   ratioHeight={9} 
                   ratioWidth={16}
-                  onInView={() => setShowPlayerThumbnail(true)}
                 >
                   <div className="relative size-full">
                     {showPlayerThumbnail && (

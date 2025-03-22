@@ -32,11 +32,22 @@ export function registerSsr(app: FastifyInstance): void {
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist'),
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public'),
     ],
-    setHeaders: (res) => {
+    setHeaders: (res, path) => {
       // 画像ファイルに対してのみキャッシュヘッダーを設定
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-      res.setHeader('Vary', 'Accept-Encoding');
-    }
+      if (path.endsWith('.webp') || path.endsWith('.jpg') || path.endsWith('.jpeg') || 
+          path.endsWith('.png') || path.endsWith('.gif') || path.endsWith('.svg')) {
+        // キャッシュ制御
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        res.setHeader('Vary', 'Accept, Accept-Encoding');
+        res.setHeader('Accept-CH', 'DPR, Width, Viewport-Width');
+        // Keep-Alive の設定
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('Keep-Alive', 'timeout=3000, max=1000');
+      }
+    },
+    cacheControl: true,
+    immutable: true,
+    maxAge: '1y'
   });
 
   app.get('/favicon.ico', (_, reply) => {
@@ -77,8 +88,20 @@ export function registerSsr(app: FastifyInstance): void {
         <head>
           <meta charSet="UTF-8" />
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+          <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
+          <link rel="preconnect" href="/public/" />
           <script src="/public/main.js"></script>
-          ${imagePaths.map((imagePath) => `<link as="image" href="${imagePath}" rel="preload" />`).join('\n')}
+          ${imagePaths
+            .filter(path => path.match(/\.(webp|jpe?g|png|gif|svg)$/))
+            .map((imagePath) => {
+              // ファーストビューに表示される重要な画像のみを高優先度でプリロード
+              if (imagePath.includes('thumbnail')) {
+                return `<link rel="preload" as="fetch" fetchpriority="high" href="${imagePath}" />`;
+              }
+              // その他の画像は非同期でプリフェッチ
+              return `<link rel="prefetch" href="${imagePath}" />`;
+            })
+            .join('\n')}
         </head>
         <body></body>
       </html>

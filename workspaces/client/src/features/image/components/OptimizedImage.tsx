@@ -5,38 +5,42 @@ interface Props {
   className?: string;
   height?: number;
   loading?: 'eager' | 'lazy';
+  priority?: boolean;
   src: string;
   width?: number;
 }
 
-export const OptimizedImage = memo(function OptimizedImage({ alt, className, height, loading = 'lazy', src, width }: Props) {
+export const OptimizedImage = memo(function OptimizedImage({ 
+  alt,
+  className,
+  height,
+  loading = 'lazy',
+  priority = false,
+  src,
+  width
+}: Props) {
   // WebPのパスを生成
   const webpSrc = src.replace(/\.(jpe?g|gif)$/, '.webp');
   
   return (
-    <picture>
-      {/* WebPをサポートしているブラウザ用 */}
-      <source
-        srcSet={webpSrc}
-        type="image/webp"
-      />
-      {/* フォールバック用の元画像 */}
-      <img
-        alt={alt}
-        className={className}
-        decoding="async"
-        fetchPriority={loading === 'eager' ? 'high' : 'auto'}
-        height={height}
-        loading={loading}
-        src={src}
-        width={width}
-        onError={(e) => {
-          // エラー時のフォールバック処理
-          const target = e.target as HTMLImageElement;
+    <img
+      alt={alt}
+      className={className}
+      decoding={priority ? 'sync' : 'async'}
+      fetchPriority={priority ? 'high' : (loading === 'eager' ? 'high' : 'auto')}
+      height={height}
+      loading={priority ? 'eager' : loading}
+      sizes={width ? `${width}px` : '100vw'}
+      src={webpSrc}
+      width={width}
+      onError={(e) => {
+        // WebPがサポートされていない場合や読み込みエラー時は元の画像にフォールバック
+        const target = e.target as HTMLImageElement;
+        if (target.src !== src) {
           target.onerror = null; // 無限ループを防ぐ
           target.src = src; // 元の画像にフォールバック
-        }}
-      />
-    </picture>
+        }
+      }}
+    />
   );
 }); 
