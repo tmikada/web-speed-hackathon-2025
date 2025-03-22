@@ -2,14 +2,18 @@ import * as Slider from '@radix-ui/react-slider';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
 import { Duration } from 'luxon';
+import { Suspense, lazy } from 'react';
 import invariant from 'tiny-invariant';
 
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
-import { SeekThumbnail } from '@wsh-2025/client/src/pages/episode/components/SeekThumbnail';
 import { useCurrentTime } from '@wsh-2025/client/src/pages/episode/hooks/useCurrentTime';
 import { useDuration } from '@wsh-2025/client/src/pages/episode/hooks/useDuration';
 import { useMuted } from '@wsh-2025/client/src/pages/episode/hooks/useMuted';
 import { usePlaying } from '@wsh-2025/client/src/pages/episode/hooks/usePlaying';
+
+const SeekThumbnail = lazy(() => import('@wsh-2025/client/src/pages/episode/components/SeekThumbnail').then(module => ({
+  default: module.SeekThumbnail
+})));
 
 interface Props {
   episode: StandardSchemaV1.InferOutput<typeof schema.getEpisodeByIdResponse>;
@@ -28,7 +32,9 @@ export const PlayerController = ({ episode }: Props) => {
       <div className="absolute inset-x-0 bottom-0 px-[12px]">
         <div className="group relative size-full">
           <div className="pointer-events-none relative size-full opacity-0 group-hover:opacity-100">
-            <SeekThumbnail episode={episode} />
+            <Suspense fallback={null}>
+              <SeekThumbnail episode={episode} />
+            </Suspense>
           </div>
 
           <Slider.Root

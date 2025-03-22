@@ -1,4 +1,4 @@
-import { Ref, useEffect, useRef } from 'react';
+import { Ref, useEffect, useRef, useState } from 'react';
 import invariant from 'tiny-invariant';
 import { assignRef } from 'use-callback-ref';
 
@@ -15,6 +15,7 @@ interface Props {
 
 export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: Props) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const mountElement = mountRef.current;
@@ -28,9 +29,31 @@ export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: 
           return;
         }
         player = createPlayer(playerType);
+        
+        // 動画の読み込み状態を監視
+        const handleLoadStart = () => {
+          setIsLoading(true);
+        };
+        const handleCanPlay = () => {
+          setIsLoading(false);
+        };
+        const handleError = () => {
+          setIsLoading(false);
+        };
+        
+        player.videoElement.addEventListener('loadstart', handleLoadStart);
+        player.videoElement.addEventListener('canplay', handleCanPlay);
+        player.videoElement.addEventListener('error', handleError);
+        
         player.load(playlistUrl, { loop: loop ?? false });
         mountElement.appendChild(player.videoElement);
         assignRef(playerRef, player);
+
+        return () => {
+          player?.videoElement.removeEventListener('loadstart', handleLoadStart);
+          player?.videoElement.removeEventListener('canplay', handleCanPlay);
+          player?.videoElement.removeEventListener('error', handleError);
+        };
     });
 
     return () => {
@@ -48,9 +71,11 @@ export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: 
       <div className="relative size-full">
         <div ref={mountRef} className="size-full" />
 
+        {isLoading && (
           <div className="absolute inset-0 z-10 grid place-content-center bg-black/50">
             <div className="i-line-md:loading-twotone-loop size-[48px] text-[#ffffff] bg-current" />
           </div>
+        )}
       </div>
     </div>
   );
