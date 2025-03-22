@@ -32,6 +32,11 @@ export function registerSsr(app: FastifyInstance): void {
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist'),
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public'),
     ],
+    setHeaders: (res) => {
+      // 画像ファイルに対してのみキャッシュヘッダーを設定
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      res.setHeader('Vary', 'Accept-Encoding');
+    }
   });
 
   app.get('/favicon.ico', (_, reply) => {

@@ -25,6 +25,7 @@ export const OptimizedImage = memo(function OptimizedImage({ alt, className, hei
         alt={alt}
         className={className}
         decoding="async"
+        fetchPriority={loading === 'eager' ? 'high' : 'auto'}
         height={height}
         loading={loading}
         src={src}
