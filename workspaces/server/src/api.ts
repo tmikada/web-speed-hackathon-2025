@@ -176,6 +176,16 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
           series: {
             with: {
               episodes: {
+                columns: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  order: true,
+                  seriesId: true,
+                  streamId: true,
+                  thumbnailUrl: true,
+                  premium: true,
+                },
                 orderBy(episode, { asc }) {
                   return asc(episode.order);
                 },
@@ -215,6 +225,16 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
           series: {
             with: {
               episodes: {
+                columns: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  order: true,
+                  seriesId: true,
+                  streamId: true,
+                  thumbnailUrl: true,
+                  premium: true,
+                },
                 orderBy(episode, { asc }) {
                   return asc(episode.order);
                 },
@@ -389,6 +409,16 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
               series: {
                 with: {
                   episodes: {
+                    columns: {
+                      id: true,
+                      title: true,
+                      description: true,
+                      order: true,
+                      seriesId: true,
+                      streamId: true,
+                      thumbnailUrl: true,
+                      premium: true,
+                    },
                     orderBy(episode, { asc }) {
                       return asc(episode.order);
                     },
@@ -433,6 +463,16 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
               series: {
                 with: {
                   episodes: {
+                    columns: {
+                      id: true,
+                      title: true,
+                      description: true,
+                      order: true,
+                      seriesId: true,
+                      streamId: true,
+                      thumbnailUrl: true,
+                      premium: true,
+                    },
                     orderBy(episode, { asc }) {
                       return asc(episode.order);
                     },
@@ -497,8 +537,24 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
             },
             with: {
               series: {
+                columns: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  thumbnailUrl: true,
+                },
                 with: {
                   episodes: {
+                    columns: {
+                      id: true,
+                      title: true,
+                      description: true,
+                      order: true,
+                      seriesId: true,
+                      streamId: true,
+                      thumbnailUrl: true,
+                      premium: true,
+                    },
                     orderBy(episode, { asc }) {
                       return asc(episode.order);
                     },
@@ -506,10 +562,36 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
                 },
               },
               episode: {
+                columns: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  order: true,
+                  seriesId: true,
+                  streamId: true,
+                  thumbnailUrl: true,
+                  premium: true,
+                },
                 with: {
                   series: {
+                    columns: {
+                      id: true,
+                      title: true,
+                      description: true,
+                      thumbnailUrl: true,
+                    },
                     with: {
                       episodes: {
+                        columns: {
+                          id: true,
+                          title: true,
+                          description: true,
+                          order: true,
+                          seriesId: true,
+                          streamId: true,
+                          thumbnailUrl: true,
+                          premium: true,
+                        },
                         orderBy(episode, { asc }) {
                           return asc(episode.order);
                         },
