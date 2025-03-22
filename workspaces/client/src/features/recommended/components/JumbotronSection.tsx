@@ -46,9 +46,8 @@ export const JumbotronSection = ({ module }: Props) => {
                 <div className="aspect-video h-[260px] w-[462px] shrink-0">
                   <Player
                     loop
-                    className="size-full object-cover"
                     playerRef={playerRef}
-                    playerType={PlayerType.ShakaPlayer}
+                    playerType={PlayerType.HlsJS}
                     playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
                   />
                 </div>

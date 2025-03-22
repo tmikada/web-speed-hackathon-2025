@@ -16,11 +16,10 @@ const config = {
   module: {
     rules: [
       {
-        exclude: [/node_modules\/video\.js/, /node_modules\/@videojs/],
+        test: /\.(?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$/,
         resolve: {
           fullySpecified: false,
         },
-        test: /\.(?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -100,7 +99,7 @@ const config = {
         },
       },
     },
-    minimize: process.env['NODE_ENV'] === 'production',
+    minimize: true,
     moduleIds: 'deterministic',
   },
   plugins: [
