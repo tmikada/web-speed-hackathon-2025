@@ -1,16 +1,19 @@
-import { StandardSchemaV1 } from '@standard-schema/spec';
-import * as schema from '@wsh-2025/schema/src/api/schema';
-import { ReactElement } from 'react';
-import { Link } from 'react-router';
-import { ArrayValues } from 'type-fest';
-
-import { Dialog } from '@wsh-2025/client/src/features/dialog/components/Dialog';
-import { useEpisode } from '@wsh-2025/client/src/pages/timetable/hooks/useEpisode';
-import { useSelectedProgramId } from '@wsh-2025/client/src/pages/timetable/hooks/useSelectedProgramId';
+import { type ReactElement } from 'react';
+import { Link } from 'react-router-dom';
+import { Dialog } from '../../../features/dialog/components/Dialog';
+import { OptimizedImage } from '../../../features/image/components/OptimizedImage';
+import { useEpisode } from '../hooks/useEpisode';
+import { useSelectedProgramId } from '../hooks/useSelectedProgramId';
 
 interface Props {
   isOpen: boolean;
-  program: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getTimetableResponse>>;
+  program: {
+    description: string;
+    episodeId: string | null;
+    id: string;
+    thumbnailUrl: string;
+    title: string;
+  };
 }
 
 export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement => {
@@ -30,10 +33,13 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
         <div className="mb-[16px] text-[14px] text-[#999999]">
           <div className="line-clamp-5">{program.description}</div>
         </div>
-        <img
-          alt=""
+        <OptimizedImage
+          alt={program.title}
           className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+          height={720}
+          loading="lazy"
           src={program.thumbnailUrl}
+          width={1280}
         />
 
         {episode != null ? (
@@ -44,10 +50,13 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
             <div className="mb-[16px] text-[14px] text-[#999999]">
               <div className="line-clamp-5">{episode.description}</div>
             </div>
-            <img
-              alt=""
+            <OptimizedImage
+              alt={episode.title}
               className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+              height={720}
+              loading="lazy"
               src={episode.thumbnailUrl}
+              width={1280}
             />
           </>
         ) : null}
