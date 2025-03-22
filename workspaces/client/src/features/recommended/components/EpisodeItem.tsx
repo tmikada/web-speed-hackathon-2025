@@ -27,12 +27,12 @@ export const EpisodeItem = ({ episode }: Props) => {
 
   return (
     <Hoverable classNames={{ hovered: 'opacity-75' }}>
-      <NavLink className="block w-full overflow-hidden" to={`/episodes/${episode.id}`}>
+      <NavLink className="block w-[280px] overflow-hidden" to={`/episodes/${episode.id}`}>
         {({ isTransitioning }) => {
           return (
             <>
               <Flipped flipId={isTransitioning ? `episode-${episode.id}` : 0}>
-                <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
+                <div className="relative h-[158px] overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
                   <AspectRatio 
                     ratioHeight={9} 
                     ratioWidth={16}
@@ -44,11 +44,11 @@ export const EpisodeItem = ({ episode }: Props) => {
                       {showThumbnail && (
                         <OptimizedImage
                           alt={series.title}
-                          className="h-auto w-full"
-                          height={720}
+                          className="size-full object-cover"
+                          height={158}
                           priority={false}
                           src={series.thumbnailUrl}
-                          width={1280}
+                          width={280}
                         />
                       )}
                     </div>

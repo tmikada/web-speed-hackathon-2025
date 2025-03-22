@@ -20,11 +20,11 @@ export const SeriesItem = ({ series }: Props) => {
 
   return (
     <Hoverable classNames={{ hovered: 'opacity-75' }}>
-      <NavLink viewTransition className="block w-full overflow-hidden" to={`/series/${series.id}`}>
+      <NavLink viewTransition className="block w-[280px] overflow-hidden" to={`/series/${series.id}`}>
         {({ isTransitioning }) => {
           return (
             <>
-              <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
+              <div className="relative h-[158px] overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
                 <Flipped stagger flipId={isTransitioning ? `series-${series.id}` : 0}>
                   <AspectRatio 
                     ratioHeight={9} 
@@ -37,11 +37,11 @@ export const SeriesItem = ({ series }: Props) => {
                       {showThumbnail && (
                         <OptimizedImage
                           alt={series.title}
-                          className="h-auto w-full"
-                          height={720}
+                          className="size-full object-cover"
+                          height={158}
                           priority={false}
                           src={series.thumbnailUrl}
-                          width={1280}
+                          width={280}
                         />
                       )}
                     </div>
