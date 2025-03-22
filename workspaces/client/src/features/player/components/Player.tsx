@@ -24,13 +24,13 @@ export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: 
     let player: PlayerWrapper | null = null;
 
     void import('@wsh-2025/client/src/features/player/logics/create_player').then(({ createPlayer }) => {
-      if (abortController.signal.aborted) {
-        return;
-      }
-      player = createPlayer(playerType);
-      player.load(playlistUrl, { loop: loop ?? false });
-      mountElement.appendChild(player.videoElement);
-      assignRef(playerRef, player);
+        if (abortController.signal.aborted) {
+          return;
+        }
+        player = createPlayer(playerType);
+        player.load(playlistUrl, { loop: loop ?? false });
+        mountElement.appendChild(player.videoElement);
+        assignRef(playerRef, player);
     });
 
     return () => {
@@ -48,9 +48,9 @@ export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: 
       <div className="relative size-full">
         <div ref={mountRef} className="size-full" />
 
-        <div className="absolute inset-0 z-[-10] grid place-content-center">
-          <div className="i-line-md:loading-twotone-loop size-[48px] text-[#ffffff]" />
-        </div>
+          <div className="absolute inset-0 z-10 grid place-content-center bg-black/50">
+            <div className="i-line-md:loading-twotone-loop size-[48px] text-[#ffffff] bg-current" />
+          </div>
       </div>
     </div>
   );

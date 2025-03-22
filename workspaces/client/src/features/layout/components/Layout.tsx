@@ -33,6 +33,7 @@ export const Layout = ({ children }: Props) => {
 
   const [scrollTopOffset, setScrollTopOffset] = useState(0);
   const [shouldHeaderBeTransparent, setShouldHeaderBeTransparent] = useState(false);
+  const [iconsLoaded, setIconsLoaded] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,6 +50,33 @@ export const Layout = ({ children }: Props) => {
   useEffect(() => {
     setShouldHeaderBeTransparent(scrollTopOffset > 80);
   }, [scrollTopOffset]);
+
+  useEffect(() => {
+    // アイコンの読み込みを確認
+    const checkIconsLoaded = () => {
+      const icons = document.querySelectorAll('.i-fa-solid\\:user, .i-fa-solid\\:sign-out-alt, .i-bi\\:house-fill, .i-fa-solid\\:calendar');
+      if (icons.length > 0) {
+        const areIconsLoaded = Array.from(icons).every((icon) => {
+          const styles = window.getComputedStyle(icon);
+          return styles.backgroundImage !== 'none' && styles.maskImage !== 'none';
+        });
+        if (areIconsLoaded) {
+          setIconsLoaded(true);
+        }
+      }
+    };
+
+    const timer = setInterval(checkIconsLoaded, 100);
+    const timeout = setTimeout(() => {
+      clearInterval(timer);
+      setIconsLoaded(true); // タイムアウト時にも表示する
+    }, 2000);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   const isSignedIn = user != null;
 
@@ -75,9 +103,13 @@ export const Layout = ({ children }: Props) => {
               type="button"
               onClick={isSignedIn ? authActions.openSignOutDialog : authActions.openSignInDialog}
             >
-              <div
-                className={`i-fa-solid:${isSignedIn ? 'sign-out-alt' : 'user'} m-[4px] size-[20px] shrink-0 grow-0`}
-              />
+              {iconsLoaded ? (
+                <div
+                  className={`i-fa-solid:${isSignedIn ? 'sign-out-alt' : 'user'} m-[4px] size-[20px] shrink-0 grow-0`}
+                />
+              ) : (
+                <div className="m-[4px] size-[20px] shrink-0 grow-0 animate-pulse bg-gray-600 rounded" />
+              )}
               <span className="grow-1 shrink-1 ml-[16px] text-left text-[14px] font-bold">
                 {isSignedIn ? 'ログアウト' : 'ログイン'}
               </span>
@@ -87,7 +119,11 @@ export const Layout = ({ children }: Props) => {
               className="block flex h-[56px] w-[188px] items-center justify-center pb-[8px] pl-[20px] pr-[8px] pt-[8px]"
               to="/"
             >
-              <div className="i-bi:house-fill m-[4px] size-[20px] shrink-0 grow-0" />
+              {iconsLoaded ? (
+                <div className="i-bi:house-fill m-[4px] size-[20px] shrink-0 grow-0" />
+              ) : (
+                <div className="m-[4px] size-[20px] shrink-0 grow-0 animate-pulse bg-gray-600 rounded" />
+              )}
               <span className="grow-1 shrink-1 ml-[16px] text-left text-[14px] font-bold">ホーム</span>
             </Link>
 
@@ -95,7 +131,11 @@ export const Layout = ({ children }: Props) => {
               className="block flex h-[56px] w-[188px] items-center justify-center pb-[8px] pl-[20px] pr-[8px] pt-[8px]"
               to="/timetable"
             >
-              <div className="i-fa-solid:calendar m-[4px] size-[20px] shrink-0 grow-0" />
+              {iconsLoaded ? (
+                <div className="i-fa-solid:calendar m-[4px] size-[20px] shrink-0 grow-0" />
+              ) : (
+                <div className="m-[4px] size-[20px] shrink-0 grow-0 animate-pulse bg-gray-600 rounded" />
+              )}
               <span className="grow-1 shrink-1 ml-[16px] text-left text-[14px] font-bold">番組表</span>
             </Link>
           </nav>

@@ -55,14 +55,14 @@ export const PlayerController = ({ episode }: Props) => {
               <Hoverable classNames={{ default: 'bg-transparent', hovered: 'bg-[#FFFFFF1F]' }}>
                 <button
                   aria-label={playing ? '一時停止する' : '再生する'}
-                  className="block rounded-[4px]"
+                  className="block rounded-[4px] p-[8px]"
                   type="button"
                   onClick={() => {
                     togglePlaying();
                   }}
                 >
                   <span
-                    className={`i-material-symbols:${playing ? 'pause-rounded' : 'play-arrow-rounded'} m-[14px] block size-[20px] shrink-0 grow-0 text-[#FFFFFF]`}
+                    className={`i-material-symbols:${playing ? 'pause-rounded' : 'play-arrow-rounded'} block size-[24px] shrink-0 grow-0 text-[#FFFFFF] bg-current`}
                   />
                 </button>
               </Hoverable>
@@ -79,14 +79,14 @@ export const PlayerController = ({ episode }: Props) => {
             <Hoverable classNames={{ default: 'bg-transparent', hovered: 'bg-[#FFFFFF1F]' }}>
               <button
                 aria-label={muted ? 'ミュート解除する' : 'ミュートする'}
-                className="block rounded-[4px]"
+                className="block rounded-[4px] p-[8px]"
                 type="button"
+                onClick={() => {
+                  toggleMuted();
+                }}
               >
                 <span
-                  className={`i-material-symbols:${muted ? 'volume-off-rounded' : 'volume-up-rounded'} m-[14px] block size-[20px] shrink-0 grow-0 text-[#FFFFFF]`}
-                  onClick={() => {
-                    toggleMuted();
-                  }}
+                  className={`i-material-symbols:${muted ? 'volume-off-rounded' : 'volume-up-rounded'} block size-[24px] shrink-0 grow-0 text-[#FFFFFF] bg-current`}
                 />
               </button>
             </Hoverable>
