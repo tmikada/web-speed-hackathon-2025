@@ -63,9 +63,9 @@ export const SeriesEpisodeItem = ({ episode, selected }: Props) => {
                 </div>
               </Flipped>
               <div className="grow">
-                <p className="mb-[8px] text-[14px] font-bold text-[#ffffff]">
+                <div className="mb-[8px] text-[14px] font-bold text-[#ffffff]">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={episode.title} visibleLine={2} />
-                </p>
+                </div>
                 <div className="text-[14px] text-[#999999]">
                   <Ellipsis ellipsis reflowOnResize maxLine={3} text={episode.description} visibleLine={3} />
                 </div>
