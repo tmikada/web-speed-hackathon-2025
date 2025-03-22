@@ -1,4 +1,3 @@
-import type { IconifyJSON } from '@iconify/types';
 import presetIcons from '@unocss/preset-icons/browser';
 import presetWind3 from '@unocss/preset-wind3';
 import initUnocssRuntime, { defineConfig } from '@unocss/runtime';
@@ -58,7 +57,14 @@ const customCollections = {
       },
     },
   }),
-  fluent: () => import('@iconify/json/json/fluent.json').then((m) => m.default as IconifyJSON),
+  fluent: () => ({
+    prefix: 'fluent',
+    icons: {
+      'live-24-filled': {
+        body: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10zM8 8.5A1.5 1.5 0 0 1 9.5 7h5A1.5 1.5 0 0 1 16 8.5v7a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 8 15.5v-7z"/></svg>',
+      },
+    },
+  }),
 } as const;
 
 async function init() {

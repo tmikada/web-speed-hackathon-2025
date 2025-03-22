@@ -1,9 +1,17 @@
-import { Ref, useEffect, useRef, useState } from 'react';
+import { Ref, RefObject, useEffect, useRef, useState } from 'react';
 import invariant from 'tiny-invariant';
-import { assignRef } from 'use-callback-ref';
 
 import { PlayerType } from '@wsh-2025/client/src/features/player/constants/player_type';
 import { PlayerWrapper } from '@wsh-2025/client/src/features/player/interfaces/player_wrapper';
+
+// 自前のassignRef実装
+const assignRef = <T,>(ref: Ref<T>, value: T) => {
+  if (typeof ref === 'function') {
+    ref(value);
+  } else if (ref != null) {
+    (ref as RefObject<T>).current = value;
+  }
+};
 
 interface Props {
   className?: string;
