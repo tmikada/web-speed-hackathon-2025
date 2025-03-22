@@ -4,6 +4,7 @@ import { Params, useParams } from 'react-router';
 import invariant from 'tiny-invariant';
 
 import { createStore } from '@wsh-2025/client/src/app/createStore';
+import { OptimizedImage } from '@wsh-2025/client/src/features/image/components/OptimizedImage';
 import { RecommendedSection } from '@wsh-2025/client/src/features/recommended/components/RecommendedSection';
 import { useRecommended } from '@wsh-2025/client/src/features/recommended/hooks/useRecommended';
 import { SeriesEpisodeList } from '@wsh-2025/client/src/features/series/components/SeriesEpisodeList';
@@ -34,10 +35,13 @@ export const SeriesPage = () => {
       <div className="m-auto px-[24px] py-[48px]">
         <header className="mb-[24px] flex w-full flex-row items-start justify-between gap-[24px]">
           <Flipped stagger flipId={`series-${series.id}`}>
-            <img
+            <OptimizedImage
+              priority
               alt=""
               className="h-auto w-[400px] shrink-0 grow-0 rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+              height={400}
               src={series.thumbnailUrl}
+              width={400}
             />
           </Flipped>
           <div className="grow-1 shrink-1 overflow-hidden">

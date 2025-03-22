@@ -3,6 +3,7 @@ import { Form } from 'react-final-form';
 
 import { useAuthActions } from '@wsh-2025/client/src/features/auth/hooks/useAuthActions';
 import { Dialog } from '@wsh-2025/client/src/features/dialog/components/Dialog';
+import { OptimizedImage } from '@wsh-2025/client/src/features/image/components/OptimizedImage';
 
 interface Props {
   isOpen: boolean;
@@ -27,8 +28,15 @@ export const SignOutDialog = ({ isOpen, onClose }: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <div className="size-full">
-        <div className="mb-[16px] flex w-full flex-row justify-center">
-          <img className="object-contain" height={36} src="/public/arema.svg" width={98} />
+        <div className="mb-[16px] flex w-full flex-row items-center justify-center">
+          <OptimizedImage
+            alt="AREMA"
+            className="object-contain"
+            height={36}
+            priority
+            src="/public/arema.svg"
+            width={98}
+          />
         </div>
 
         <h2 className="mb-[24px] text-center text-[24px] font-bold">ログアウト</h2>

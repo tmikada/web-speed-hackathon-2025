@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { ReactNode, useEffect, useState } from 'react';
 import { Flipper } from 'react-flip-toolkit';
 import { Link, useLocation, useNavigation } from 'react-router';
+import clsx from 'clsx';
 
 import { SignInDialog } from '@wsh-2025/client/src/features/auth/components/SignInDialog';
 import { SignOutDialog } from '@wsh-2025/client/src/features/auth/components/SignOutDialog';
@@ -12,6 +13,7 @@ import { useAuthDialogType } from '@wsh-2025/client/src/features/auth/hooks/useA
 import { useAuthUser } from '@wsh-2025/client/src/features/auth/hooks/useAuthUser';
 import { Loading } from '@wsh-2025/client/src/features/layout/components/Loading';
 import { useSubscribePointer } from '@wsh-2025/client/src/features/layout/hooks/useSubscribePointer';
+import { OptimizedImage } from '@wsh-2025/client/src/features/image/components/OptimizedImage';
 
 interface Props {
   children: ReactNode;
@@ -92,7 +94,14 @@ export const Layout = ({ children }: Props) => {
           )}
         >
           <Link className="block flex w-[188px] items-center justify-center px-[8px]" to="/">
-            <img alt="AREMA" className="object-contain" height={36} src="/public/arema.svg" width={98} />
+            <OptimizedImage
+              alt="AREMA"
+              className="object-contain"
+              height={36}
+              priority
+              src="/public/arema.svg"
+              width={98}
+            />
           </Link>
         </header>
 
