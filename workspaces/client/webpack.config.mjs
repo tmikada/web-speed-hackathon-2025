@@ -12,7 +12,7 @@ import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 /** @type {import('webpack').Configuration} */
 const config = {
-  devtool: process.env['NODE_ENV'] === 'production' ? 'source-map' : 'inline-source-map',
+  devtool: process.env['NODE_ENV'] === 'production' ? false : 'inline-source-map',
   entry: {
     main: {
       import: ['./src/main.tsx'],

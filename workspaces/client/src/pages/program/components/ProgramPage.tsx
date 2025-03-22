@@ -7,7 +7,6 @@ import invariant from 'tiny-invariant';
 
 import { createStore } from '@wsh-2025/client/src/app/createStore';
 import { OptimizedImage } from '@wsh-2025/client/src/features/image/components/OptimizedImage';
-import { AspectRatio } from '@wsh-2025/client/src/features/layout/components/AspectRatio';
 import { Player } from '@wsh-2025/client/src/features/player/components/Player';
 import { PlayerType } from '@wsh-2025/client/src/features/player/constants/player_type';
 import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
@@ -45,7 +44,9 @@ export const ProgramPage = () => {
   invariant(programId);
 
   const program = useProgramById({ programId });
-  invariant(program);
+  if (!program) {
+    return null; // Early return if program is not available
+  }
 
   const timetable = useTimetable();
   const nextProgram = timetable[program.channel.id]?.find((p) => {
@@ -113,16 +114,16 @@ export const ProgramPage = () => {
       <div className="px-[24px] py-[48px]">
         <Flipped stagger flipId={`program-${program.id}`}>
           <div className="m-auto mb-[16px] max-w-[1280px] outline outline-[1px] outline-[#212121]">
-            <div className="relative size-full">
-              <OptimizedImage
-                priority
-                alt=""
-                className="h-auto w-full"
-                height={720}
-                src={program.thumbnailUrl}
-                width={1280}
-              />
-              {isArchivedRef.current ? (
+            {isArchivedRef.current ? (
+              <div className="relative size-full">
+                <OptimizedImage
+                  priority
+                  alt=""
+                  className="h-auto w-full"
+                  height={720}
+                  src={program.thumbnailUrl}
+                  width={1280}
+                />
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
                   <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">この番組は放送が終了しました</p>
                   <Link
@@ -132,26 +133,26 @@ export const ProgramPage = () => {
                     見逃し視聴する
                   </Link>
                 </div>
-              ) : isBroadcastStarted ? (
-                <>
-                  <Player
-                    loop
-                    playerRef={playerRef}
-                    playerType={PlayerType.HlsJS}
-                    playlistUrl={`/streams/channel/${program.channel.id}/playlist.m3u8`}
-                  />
-                  <div className="absolute inset-x-0 bottom-0">
-                    <PlayerController />
-                  </div>
-                </>
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
-                  <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">
-                    この番組は {formatDate(program.startAt)} に放送予定です
-                  </p>
+              </div>
+            ) : isBroadcastStarted ? (
+              <div className="relative size-full">
+                <Player
+                  loop
+                  playerRef={playerRef}
+                  playerType={PlayerType.HlsJS}
+                  playlistUrl={`/streams/channel/${program.channel.id}/playlist.m3u8`}
+                />
+                <div className="absolute inset-x-0 bottom-0">
+                  <PlayerController />
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
+                <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">
+                  この番組は {formatDate(program.startAt)} に放送予定です
+                </p>
+              </div>
+            )}
           </div>
         </Flipped>
 
@@ -172,11 +173,11 @@ export const ProgramPage = () => {
           </div>
         </div>
 
-        {modules[0] != null ? (
+        {modules[0] != null && (
           <div className="mt-[24px]">
             <RecommendedSection module={modules[0]} />
           </div>
-        ) : null}
+        )}
 
         <div className="mt-[24px]">
           <h2 className="mb-[12px] text-[22px] font-bold text-[#ffffff]">関連するエピソード</h2>
