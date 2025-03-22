@@ -113,7 +113,7 @@ export function registerSsr(app: FastifyInstance): void {
               // サムネイル画像のみをプリロードの対象とする
               return path.match(/\.(webp|jpe?g)$/) && path.includes('thumbnail');
             })
-            .slice(0, 5) // 最初の5つの画像のみをプリロード
+            .slice(0, 10) // 最初の10つの画像のみをプリロード
             .map((imagePath) => {
               return `<link rel="preload" as="image" fetchpriority="high" href="${imagePath}" />`;
             })
