@@ -1,26 +1,58 @@
-import { ReactNode, useEffect, useRef } from 'react';
-import { useUpdate } from 'react-use';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 interface Props {
   children: ReactNode;
+  onInView?: () => void;
   ratioHeight: number;
   ratioWidth: number;
 }
 
-export const AspectRatio = ({ children, ratioHeight, ratioWidth }: Props) => {
-  const forceUpdate = useUpdate();
+export const AspectRatio = ({ children, ratioHeight, ratioWidth, onInView }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(function tick() {
-      forceUpdate();
-    }, 1000);
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
     return () => {
-      clearInterval(interval);
+      resizeObserver.disconnect();
     };
   }, []);
 
-  const width = containerRef.current?.getBoundingClientRect().width ?? 0;
+  useEffect(() => {
+    if (!containerRef.current || !onInView) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting && !isInView) {
+          setIsInView(true);
+          onInView();
+        }
+      },
+      {
+        rootMargin: '50px',
+        threshold: 0
+      }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [onInView, isInView]);
+
   const height = (width * ratioHeight) / ratioWidth;
 
   return (

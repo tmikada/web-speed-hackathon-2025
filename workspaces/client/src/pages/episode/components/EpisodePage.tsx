@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { type Params, useParams } from 'react-router';
@@ -40,6 +40,9 @@ export const EpisodePage = () => {
   const playerRef = usePlayerRef();
   const user = useAuthUser();
   const { openSignInDialog } = useAuthActions();
+  const [showPremiumThumbnail, setShowPremiumThumbnail] = useState(false);
+  const [showLoadingThumbnail, setShowLoadingThumbnail] = useState(false);
+  const [showPlayerThumbnail, setShowPlayerThumbnail] = useState(false);
 
   if (episode == null) {
     return null;
@@ -51,16 +54,21 @@ export const EpisodePage = () => {
         <Flipped flipId={`episode-${episode.id}`}>
           <div className="relative w-full py-6">
             {episode.premium && user == null ? (
-              <AspectRatio ratioHeight={9} ratioWidth={16}>
+              <AspectRatio 
+                ratioHeight={9} 
+                ratioWidth={16}
+                onInView={() => setShowPremiumThumbnail(true)}
+              >
                 <div className="relative size-full">
-                  <OptimizedImage
-                    alt={episode.title}
-                    className="size-full object-cover"
-                    height={720}
-                    loading="lazy"
-                    src={episode.thumbnailUrl}
-                    width={1280}
-                  />
+                  {showPremiumThumbnail && (
+                    <OptimizedImage
+                      alt={episode.title}
+                      className="size-full object-cover"
+                      height={720}
+                      src={episode.thumbnailUrl}
+                      width={1280}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-[#00000077]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">
@@ -81,30 +89,41 @@ export const EpisodePage = () => {
             ) : (
               <Suspense
                 fallback={
-                  <AspectRatio ratioHeight={9} ratioWidth={16}>
+                  <AspectRatio 
+                    ratioHeight={9} 
+                    ratioWidth={16}
+                    onInView={() => setShowLoadingThumbnail(true)}
+                  >
                     <div className="grid size-full">
-                      <OptimizedImage
-                        alt={episode.title}
-                        className="size-full place-self-stretch object-cover [grid-area:1/-1]"
-                        height={720}
-                        loading="lazy"
-                        src={episode.thumbnailUrl}
-                        width={1280}
-                      />
+                      {showLoadingThumbnail && (
+                        <OptimizedImage
+                          alt={episode.title}
+                          className="size-full place-self-stretch object-cover [grid-area:1/-1]"
+                          height={720}
+                          src={episode.thumbnailUrl}
+                          width={1280}
+                        />
+                      )}
                       <div className="size-full place-self-stretch bg-[#00000077] [grid-area:1/-1]" />
                       <div className="i-line-md:loading-twotone-loop size-[48px] place-self-center text-[#ffffff] bg-current [grid-area:1/-1]" />
                     </div>
                   </AspectRatio>
                 }
               >
-                <AspectRatio ratioHeight={9} ratioWidth={16}>
+                <AspectRatio 
+                  ratioHeight={9} 
+                  ratioWidth={16}
+                  onInView={() => setShowPlayerThumbnail(true)}
+                >
                   <div className="relative size-full">
-                    <Player
-                      className="size-full"
-                      playerRef={playerRef}
-                      playerType={PlayerType.HlsJS}
-                      playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
-                    />
+                    {showPlayerThumbnail && (
+                      <Player
+                        className="size-full"
+                        playerRef={playerRef}
+                        playerType={PlayerType.HlsJS}
+                        playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
+                      />
+                    )}
                     <div className="absolute inset-x-0 bottom-0">
                       <PlayerController episode={episode} />
                     </div>

@@ -1,7 +1,8 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Dialog } from '../../../features/dialog/components/Dialog';
 import { OptimizedImage } from '../../../features/image/components/OptimizedImage';
+import { AspectRatio } from '../../../features/layout/components/AspectRatio';
 import { useEpisode } from '../hooks/useEpisode';
 import { useSelectedProgramId } from '../hooks/useSelectedProgramId';
 
@@ -19,6 +20,8 @@ interface Props {
 export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement => {
   const episode = useEpisode(program.episodeId);
   const [, setProgram] = useSelectedProgramId();
+  const [showProgramImage, setShowProgramImage] = useState(false);
+  const [showEpisodeImage, setShowEpisodeImage] = useState(false);
 
   const onClose = () => {
     setProgram(null);
@@ -33,14 +36,25 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
         <div className="mb-[16px] text-[14px] text-[#999999]">
           <div className="line-clamp-5">{program.description}</div>
         </div>
-        <OptimizedImage
-          alt={program.title}
-          className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-          height={720}
-          loading="lazy"
-          src={program.thumbnailUrl}
-          width={1280}
-        />
+        <AspectRatio 
+          ratioHeight={9} 
+          ratioWidth={16}
+          onInView={() => {
+            setShowProgramImage(true);
+          }}
+        >
+          <div className="relative size-full">
+            {showProgramImage && (
+              <OptimizedImage
+                alt={program.title}
+                className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+                height={720}
+                src={program.thumbnailUrl}
+                width={1280}
+              />
+            )}
+          </div>
+        </AspectRatio>
 
         {episode != null ? (
           <>
@@ -50,14 +64,25 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
             <div className="mb-[16px] text-[14px] text-[#999999]">
               <div className="line-clamp-5">{episode.description}</div>
             </div>
-            <OptimizedImage
-              alt={episode.title}
-              className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-              height={720}
-              loading="lazy"
-              src={episode.thumbnailUrl}
-              width={1280}
-            />
+            <AspectRatio 
+              ratioHeight={9} 
+              ratioWidth={16}
+              onInView={() => {
+                setShowEpisodeImage(true);
+              }}
+            >
+              <div className="relative size-full">
+                {showEpisodeImage && (
+                  <OptimizedImage
+                    alt={episode.title}
+                    className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+                    height={720}
+                    src={episode.thumbnailUrl}
+                    width={1280}
+                  />
+                )}
+              </div>
+            </AspectRatio>
           </>
         ) : null}
 
