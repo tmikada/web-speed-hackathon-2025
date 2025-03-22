@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +13,10 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
 
+interface WebpackManifest {
+  [key: string]: string;
+}
+
 function getFiles(parent: string): string[] {
   const dirents = readdirSync(parent, { withFileTypes: true });
   return dirents
@@ -26,12 +30,16 @@ function getFilePaths(relativePath: string, rootDir: string): string[] {
 }
 
 export function registerSsr(app: FastifyInstance): void {
+  const clientDistPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist');
+  const publicPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public');
+  
+  // マニフェストファイルを読み込む
+  const manifestPath = path.join(clientDistPath, 'manifest.json');
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as WebpackManifest;
+
   app.register(fastifyStatic, {
     prefix: '/public/',
-    root: [
-      path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist'),
-      path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public'),
-    ],
+    root: [clientDistPath, publicPath],
     setHeaders: (res, path) => {
       // 画像ファイルに対してのみキャッシュヘッダーを設定
       if (path.endsWith('.webp') || path.endsWith('.jpg') || path.endsWith('.jpeg') || 
@@ -82,6 +90,15 @@ export function registerSsr(app: FastifyInstance): void {
       getFilePaths('public/logos', rootDir),
     ].flat();
 
+    // JavaScriptファイルの読み込み順序を制御
+    const jsFiles = [
+      manifest['runtime.js'] || '',         // ランタイムを最初に
+      manifest['main.js'] || '',           // メインバンドル
+      ...Object.entries(manifest)     // その他のチャンク
+        .filter(([key]) => key.startsWith('vendor.') || key.startsWith('common.'))
+        .map(([, value]) => value)
+    ].filter(Boolean);
+
     reply.type('text/html').send(/* html */ `
       <!DOCTYPE html>
       <html lang="ja">
@@ -90,7 +107,7 @@ export function registerSsr(app: FastifyInstance): void {
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
           <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
           <link rel="preconnect" href="/public/" />
-          <script src="/public/main.js"></script>
+          ${jsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
           ${imagePaths
             .filter(path => path.match(/\.(webp|jpe?g|png|gif|svg)$/))
             .map((imagePath) => {
