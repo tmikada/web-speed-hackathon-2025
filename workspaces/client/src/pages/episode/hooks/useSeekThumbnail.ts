@@ -20,25 +20,44 @@ async function generateThumbnailFromVideo(videoBlob: Blob): Promise<string> {
 
     video.autoplay = false;
     video.muted = true;
-    video.src = URL.createObjectURL(videoBlob);
+    video.preload = 'metadata';
 
-    video.onloadeddata = () => {
-      canvas.width = 160;
-      canvas.height = 90;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // Clean up
+    // エラーハンドリングを改善
+    const cleanup = () => {
       URL.revokeObjectURL(video.src);
       video.remove();
-      
-      resolve(canvas.toDataURL('image/jpeg', 0.8));
+    };
+
+    video.onloadedmetadata = () => {
+      video.currentTime = 0;
+    };
+
+    video.onloadeddata = () => {
+      try {
+        canvas.width = 160;
+        canvas.height = 90;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        cleanup();
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      } catch (error) {
+        cleanup();
+        reject(new Error('Failed to generate thumbnail'));
+      }
     };
 
     video.onerror = () => {
-      URL.revokeObjectURL(video.src);
-      video.remove();
+      cleanup();
       reject(new Error('Failed to load video'));
     };
+
+    // Blobからの読み込みを試みる
+    try {
+      video.src = URL.createObjectURL(videoBlob);
+    } catch (error) {
+      cleanup();
+      reject(new Error('Failed to create video URL'));
+    }
   });
 }
 
@@ -56,13 +75,13 @@ async function getSeekThumbnail({ episode }: Params): Promise<string> {
     parser.end();
 
     const segments = parser.manifest.segments;
-    if (segments?.length === 0) {
+    if (!segments?.length) {
       throw new Error('No segments found in playlist');
     }
 
     // 最初のセグメントファイルのみを取得
-    const firstSegment = segments?.[0];
-    if (!firstSegment || !firstSegment.uri) {
+    const firstSegment = segments[0];
+    if (!firstSegment?.uri) {
       throw new Error('Invalid segment data');
     }
 
@@ -75,8 +94,7 @@ async function getSeekThumbnail({ episode }: Params): Promise<string> {
     // サムネイルを生成
     return await generateThumbnailFromVideo(videoBlob);
   } catch (error) {
-    console.error('Failed to generate thumbnail:', error);
-    // エラーが発生した場合は、デフォルトのサムネイルを返す
+    // エラーログを出力しない
     return episode.thumbnailUrl;
   }
 }
