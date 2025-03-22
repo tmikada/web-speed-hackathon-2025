@@ -47,7 +47,7 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
             {showProgramImage && (
               <OptimizedImage
                 alt={program.title}
-                className="h-auto w-full"
+                className="h-auto w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
                 height={720}
                 priority={false}
                 src={program.thumbnailUrl}
@@ -59,7 +59,7 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
 
         {episode != null ? (
           <>
-            <h3 className="mb-[24px] text-center text-[24px] font-bold">番組で放送するエピソード</h3>
+            <h3 className="mt-[24px] mb-[24px] text-center text-[24px] font-bold">番組で放送するエピソード</h3>
 
             <p className="mb-[8px] text-[14px] font-bold text-[#ffffff]">{episode.title}</p>
             <div className="mb-[16px] text-[14px] text-[#999999]">
@@ -76,7 +76,7 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
                 {showEpisodeImage && (
                   <OptimizedImage
                     alt={episode.title}
-                    className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
+                    className="w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
                     height={720}
                     src={episode.thumbnailUrl}
                     width={1280}
@@ -87,7 +87,7 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
           </>
         ) : null}
 
-        <div className="flex flex-row justify-center">
+        <div className="mt-[24px] flex flex-row justify-center">
           <Link
             className="block flex w-[160px] flex-row items-center justify-center rounded-[4px] bg-[#1c43d1] p-[12px] text-[14px] font-bold text-[#ffffff] disabled:opacity-50"
             to={`/programs/${program.id}`}
