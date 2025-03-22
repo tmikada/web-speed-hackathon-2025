@@ -3,11 +3,11 @@ import { memo, useEffect, useState } from 'react';
 interface Props {
   alt: string;
   className?: string;
-  height?: number;
+  height: number;
   loading?: 'eager' | 'lazy';
   priority?: boolean;
   src: string;
-  width?: number;
+  width: number;
 }
 
 export const OptimizedImage = memo(function OptimizedImage({ 

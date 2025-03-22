@@ -29,7 +29,7 @@ export const PlayerController = ({ episode }: Props) => {
     <div className="relative h-[120px]">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#212121] to-transparent" />
 
-      <div className="absolute inset-x-0 bottom-0 px-[12px]">
+      <div className="absolute inset-x-0 bottom-0 px-[12px] pb-[12px]">
         <div className="group relative size-full">
           <div className="pointer-events-none relative size-full opacity-0 group-hover:opacity-100">
             <Suspense fallback={null}>

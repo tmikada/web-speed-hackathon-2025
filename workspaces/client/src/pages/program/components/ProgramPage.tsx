@@ -114,45 +114,47 @@ export const ProgramPage = () => {
       <div className="px-[24px] py-[48px]">
         <Flipped stagger flipId={`program-${program.id}`}>
           <div className="m-auto mb-[16px] max-w-[1280px] outline outline-[1px] outline-[#212121]">
-            {isArchivedRef.current ? (
-              <div className="relative size-full">
-                <OptimizedImage
-                  priority
-                  alt=""
-                  className="h-auto w-full"
-                  height={720}
-                  src={program.thumbnailUrl}
-                  width={1280}
-                />
+            <div className="relative aspect-video w-full bg-[#1a1a1a]">
+              {isArchivedRef.current ? (
+                <>
+                  <OptimizedImage
+                    priority
+                    alt=""
+                    className="h-full w-full object-cover"
+                    height={720}
+                    src={program.thumbnailUrl}
+                    width={1280}
+                  />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
+                    <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">この番組は放送が終了しました</p>
+                    <Link
+                      className="block flex w-[160px] flex-row items-center justify-center rounded-[4px] bg-[#1c43d1] p-[12px] text-[14px] font-bold text-[#ffffff] disabled:opacity-50"
+                      to={`/episodes/${program.episode.id}`}
+                    >
+                      見逃し視聴する
+                    </Link>
+                  </div>
+                </>
+              ) : isBroadcastStarted ? (
+                <>
+                  <Player
+                    loop
+                    playerRef={playerRef}
+                    playerType={PlayerType.HlsJS}
+                    playlistUrl={`/streams/channel/${program.channel.id}/playlist.m3u8`}
+                  />
+                  <div className="absolute inset-x-0 bottom-0">
+                    <PlayerController />
+                  </div>
+                </>
+              ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
-                  <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">この番組は放送が終了しました</p>
-                  <Link
-                    className="block flex w-[160px] flex-row items-center justify-center rounded-[4px] bg-[#1c43d1] p-[12px] text-[14px] font-bold text-[#ffffff] disabled:opacity-50"
-                    to={`/episodes/${program.episode.id}`}
-                  >
-                    見逃し視聴する
-                  </Link>
+                  <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">
+                    この番組は {formatDate(program.startAt)} に放送予定です
+                  </p>
                 </div>
-              </div>
-            ) : isBroadcastStarted ? (
-              <div className="relative size-full">
-                <Player
-                  loop
-                  playerRef={playerRef}
-                  playerType={PlayerType.HlsJS}
-                  playlistUrl={`/streams/channel/${program.channel.id}/playlist.m3u8`}
-                />
-                <div className="absolute inset-x-0 bottom-0">
-                  <PlayerController />
-                </div>
-              </div>
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
-                <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">
-                  この番組は {formatDate(program.startAt)} に放送予定です
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </Flipped>
 

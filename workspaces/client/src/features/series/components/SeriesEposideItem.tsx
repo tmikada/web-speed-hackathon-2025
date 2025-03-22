@@ -33,7 +33,7 @@ export const SeriesEpisodeItem = ({ episode, selected }: Props) => {
           return (
             <>
               <Flipped stagger flipId={!selected && isTransitioning ? `episode-${episode.id}` : 0}>
-                <div className="relative shrink-0 grow-0 overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F] before:absolute before:inset-x-0 before:bottom-0 before:block before:h-[64px] before:bg-gradient-to-t before:from-[#212121] before:to-transparent before:content-['']">
+                <div className="relative w-[192px] shrink-0 overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F] before:absolute before:inset-x-0 before:bottom-0 before:block before:h-[64px] before:bg-gradient-to-t before:from-[#212121] before:to-transparent before:content-['']">
                   <AspectRatio 
                     ratioHeight={9} 
                     ratioWidth={16}
@@ -45,7 +45,7 @@ export const SeriesEpisodeItem = ({ episode, selected }: Props) => {
                       {showThumbnail && (
                         <OptimizedImage
                           alt={episode.title}
-                          className="h-auto w-[192px]"
+                          className="h-auto w-full"
                           height={108}
                           priority={false}
                           src={episode.thumbnailUrl}
@@ -62,11 +62,11 @@ export const SeriesEpisodeItem = ({ episode, selected }: Props) => {
                   ) : null}
                 </div>
               </Flipped>
-              <div className="grow">
-                <div className="mb-[8px] text-[14px] font-bold text-[#ffffff]">
+              <div className="min-h-[108px] w-full">
+                <div className="mb-[8px] text-[14px] font-bold text-[#ffffff] line-clamp-2">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={episode.title} visibleLine={2} />
                 </div>
-                <div className="text-[14px] text-[#999999]">
+                <div className="text-[14px] text-[#999999] line-clamp-3">
                   <Ellipsis ellipsis reflowOnResize maxLine={3} text={episode.description} visibleLine={3} />
                 </div>
               </div>

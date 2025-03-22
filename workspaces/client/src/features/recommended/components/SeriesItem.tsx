@@ -33,23 +33,21 @@ export const SeriesItem = ({ series }: Props) => {
                       setShowThumbnail(true);
                     }}
                   >
-                    <div className="relative size-full">
-                      {showThumbnail && (
-                        <OptimizedImage
-                          alt={series.title}
-                          className="h-auto w-full"
-                          height={158}
-                          priority={false}
-                          src={series.thumbnailUrl}
-                          width={280}
-                        />
-                      )}
+                    <div className="relative size-full bg-[#1a1a1a]">
+                      <OptimizedImage
+                        alt={series.title}
+                        className="h-auto w-full"
+                        height={158}
+                        priority={false}
+                        src={showThumbnail ? series.thumbnailUrl : '/images/037.webp'}
+                        width={280}
+                      />
                     </div>
                   </AspectRatio>
                 </Flipped>
               </div>
-              <div className="p-[8px]">
-                <div className="text-[14px] font-bold text-[#ffffff]">
+              <div className="h-[64px] w-full p-[8px]">
+                <div className="text-[14px] font-bold text-[#ffffff] line-clamp-2">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
                 </div>
               </div>

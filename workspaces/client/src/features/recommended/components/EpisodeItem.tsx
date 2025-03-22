@@ -4,13 +4,14 @@ import { useState } from 'react';
 import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { NavLink } from 'react-router-dom';
-import { type ArrayValues } from 'type-fest';
 
 import { OptimizedImage } from '@wsh-2025/client/src/features/image/components/OptimizedImage';
 import { AspectRatio } from '@wsh-2025/client/src/features/layout/components/AspectRatio';
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
 
-type Episode = ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>['items'][number];
+type RecommendedModuleResponse = StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>;
+type RecommendedItem = RecommendedModuleResponse[number]['items'][number];
+type Episode = NonNullable<RecommendedItem['episode']>;
 
 interface Props {
   episode: Episode;
@@ -40,17 +41,15 @@ export const EpisodeItem = ({ episode }: Props) => {
                       setShowThumbnail(true);
                     }}
                   >
-                    <div className="relative size-full">
-                      {showThumbnail && (
-                        <OptimizedImage
-                          alt={series.title}
-                          className="h-auto w-full"
-                          height={158}
-                          priority={false}
-                          src={series.thumbnailUrl}
-                          width={280}
-                        />
-                      )}
+                    <div className="relative size-full bg-[#1a1a1a]">
+                      <OptimizedImage
+                        alt={series.title}
+                        className="h-auto w-full"
+                        height={158}
+                        priority={false}
+                        src={showThumbnail ? series.thumbnailUrl : '/images/037.webp'}
+                        width={280}
+                      />
                     </div>
                   </AspectRatio>
                   <span className="i-material-symbols:play-arrow-rounded absolute bottom-[4px] left-[4px] m-[4px] block size-[20px] text-[#ffffff]" />
@@ -61,11 +60,11 @@ export const EpisodeItem = ({ episode }: Props) => {
                   ) : null}
                 </div>
               </Flipped>
-              <div className="p-[8px]">
-                <div className="mb-[4px] text-[14px] font-bold text-[#ffffff]">
+              <div className="h-[88px] w-full p-[8px]">
+                <div className="mb-[4px] text-[14px] font-bold text-[#ffffff] line-clamp-2">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={episode.title} visibleLine={2} />
                 </div>
-                <div className="text-[12px] text-[#999999]">
+                <div className="text-[12px] text-[#999999] line-clamp-2">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
                 </div>
               </div>
