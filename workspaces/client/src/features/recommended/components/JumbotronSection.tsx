@@ -1,17 +1,18 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
-import { useRef } from 'react';
+import { useRef, Suspense, lazy } from 'react';
 import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { NavLink } from 'react-router';
 import invariant from 'tiny-invariant';
 import { ArrayValues } from 'type-fest';
 
-import { Player } from '../../player/components/Player';
 import { PlayerType } from '../../player/constants/player_type';
 import { PlayerWrapper } from '../../player/interfaces/player_wrapper';
 
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
+
+const Player = lazy(() => import('../../player/components/Player').then(mod => ({ default: mod.Player })));
 
 interface Props {
   module: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
@@ -44,12 +45,18 @@ export const JumbotronSection = ({ module }: Props) => {
 
               <Flipped stagger flipId={isTransitioning ? `episode-${episode.id}` : 0}>
                 <div className="aspect-video h-[260px] w-[462px] shrink-0">
-                  <Player
-                    loop
-                    playerRef={playerRef}
-                    playerType={PlayerType.HlsJS}
-                    playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
-                  />
+                  <Suspense fallback={
+                    <div className="w-full h-full bg-gray-800 animate-pulse flex items-center justify-center">
+                      <span className="text-white">Loading...</span>
+                    </div>
+                  }>
+                    <Player
+                      loop
+                      playerRef={playerRef}
+                      playerType={PlayerType.HlsJS}
+                      playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
+                    />
+                  </Suspense>
                 </div>
               </Flipped>
             </>
