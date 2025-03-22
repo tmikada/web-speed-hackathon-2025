@@ -1,5 +1,8 @@
 import path from 'node:path';
 
+import CompressionPlugin from 'compression-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
@@ -79,17 +82,48 @@ const config = {
       maxAsyncRequests: 20,
       minSize: 20000,
       cacheGroups: {
+        react: {
+          test: /[\\/]node_modules[\\/](react|react-dom|@remix-run)[\\/]/,
+          name: 'vendor.react',
+          priority: 20,
+          reuseExistingChunk: true,
+        },
+        polyfills: {
+          test: /[\\/]node_modules[\\/](core-js|regenerator-runtime|@babel\/runtime)[\\/]/,
+          name: 'vendor.polyfills',
+          priority: 19,
+          reuseExistingChunk: true,
+        },
+        hls: {
+          test: /[\\/]node_modules[\\/](hls\.js|@ffmpeg)[\\/]/,
+          name: 'vendor.hls',
+          priority: 18,
+          reuseExistingChunk: true,
+        },
+        sql: {
+          test: /[\\/]node_modules[\\/](sql\.js|@jlongster\/sql\.js|better-sqlite3|sqlite3)[\\/]/,
+          name: 'vendor.sql',
+          priority: 17,
+          reuseExistingChunk: true,
+        },
+        ui: {
+          test: /[\\/]node_modules[\\/](@radix-ui|@floating-ui|@headlessui|@heroicons)[\\/]/,
+          name: 'vendor.ui',
+          priority: 15,
+          reuseExistingChunk: true,
+        },
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
-          /** @param {object} module */
+          /** @param {object & { context?: string }} module */
           name(module) {
-            if (!module || typeof module !== 'object' || !module.context) return 'vendor';
+            if (!module?.context) return 'vendor';
             const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
             const packageName = match?.[1]?.replace('@', '') ?? 'vendor';
-            return `vendor.${packageName}`;
+            return `vendor.${packageName.split('/')[0]}`;
           },
           priority: 10,
           reuseExistingChunk: true,
+          minSize: 10000,
         },
         common: {
           name: 'common',
@@ -100,6 +134,22 @@ const config = {
       },
     },
     minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+            pure_funcs: ['console.log']
+          },
+          format: {
+            comments: false,
+          },
+        },
+        extractComments: false,
+      }),
+      new CssMinimizerPlugin(),
+    ],
     moduleIds: 'deterministic',
   },
   plugins: [
@@ -118,6 +168,12 @@ const config = {
         }, /** @type {Record<string, string>} */(seed || {}));
         return manifestFiles;
       },
+    }),
+    new CompressionPlugin({
+      test: /\.(js|css|html|svg)$/,
+      algorithm: 'gzip',
+      threshold: 10240, // 10KB以上のファイルのみ圧縮
+      minRatio: 0.8,
     }),
     process.env['ANALYZE'] === 'true' && new BundleAnalyzerPlugin({
       analyzerMode: 'static',
