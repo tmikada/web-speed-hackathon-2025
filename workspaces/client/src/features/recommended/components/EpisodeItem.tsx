@@ -1,7 +1,6 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
 import { useState } from 'react';
-import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { NavLink } from 'react-router-dom';
 
@@ -15,10 +14,12 @@ type Episode = NonNullable<RecommendedItem['episode']>;
 
 interface Props {
   episode: Episode;
+  index?: number;
 }
 
-export const EpisodeItem = ({ episode }: Props) => {
+export const EpisodeItem = ({ episode, index = 0 }: Props) => {
   const [showThumbnail, setShowThumbnail] = useState(false);
+  const isFirstRow = index < 4;
 
   if (!episode.series) {
     return null;
@@ -46,7 +47,8 @@ export const EpisodeItem = ({ episode }: Props) => {
                         alt={series.title}
                         className="h-auto w-full"
                         height={158}
-                        priority={false}
+                        loading={isFirstRow ? 'eager' : 'lazy'}
+                        priority={isFirstRow}
                         src={showThumbnail ? series.thumbnailUrl : '/images/037.webp'}
                         width={280}
                       />
@@ -61,11 +63,11 @@ export const EpisodeItem = ({ episode }: Props) => {
                 </div>
               </Flipped>
               <div className="h-[88px] w-full p-[8px]">
-                <div className="mb-[4px] text-[14px] font-bold text-[#ffffff] line-clamp-2">
-                  <Ellipsis ellipsis reflowOnResize maxLine={2} text={episode.title} visibleLine={2} />
-                </div>
-                <div className="text-[12px] text-[#999999] line-clamp-2">
-                  <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
+                <h3 className="mb-[4px] text-[14px] font-bold text-[#ffffff] line-clamp-2 overflow-hidden text-ellipsis">
+                  {episode.title}
+                </h3>
+                <div className="text-[12px] text-[#999999] line-clamp-2 overflow-hidden text-ellipsis">
+                  {series.title}
                 </div>
               </div>
             </>

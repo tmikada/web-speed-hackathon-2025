@@ -1,55 +1,52 @@
-import { useState } from 'react';
-import Ellipsis from 'react-ellipsis-component';
+import { StandardSchemaV1 } from '@standard-schema/spec';
+import * as schema from '@wsh-2025/schema/src/api/schema';
 import { Flipped } from 'react-flip-toolkit';
 import { NavLink } from 'react-router';
+import { ArrayValues } from 'type-fest';
 
 import { OptimizedImage } from '@wsh-2025/client/src/features/image/components/OptimizedImage';
 import { AspectRatio } from '@wsh-2025/client/src/features/layout/components/AspectRatio';
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
 
+type RecommendedModuleResponse = StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>;
+type RecommendedItem = RecommendedModuleResponse[number]['items'][number];
+type Series = NonNullable<RecommendedItem['series']>;
+
 interface Props {
-  series: {
-    id: string;
-    thumbnailUrl: string;
-    title: string;
-  };
+  series: Series;
+  index?: number;
 }
 
-export const SeriesItem = ({ series }: Props) => {
-  const [showThumbnail, setShowThumbnail] = useState(false);
+export const SeriesItem = ({ series, index = 0 }: Props) => {
+  const isFirstRow = index < 4;
 
   return (
     <Hoverable classNames={{ hovered: 'opacity-75' }}>
-      <NavLink viewTransition className="block w-full overflow-hidden" to={`/series/${series.id}`}>
+      <NavLink className="block w-full overflow-hidden" to={`/series/${series.id}`}>
         {({ isTransitioning }) => {
           return (
             <>
-              <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
-                <Flipped stagger flipId={isTransitioning ? `series-${series.id}` : 0}>
-                  <AspectRatio 
-                    ratioHeight={9} 
-                    ratioWidth={16}
-                    onInView={() => {
-                      setShowThumbnail(true);
-                    }}
-                  >
+              <Flipped flipId={isTransitioning ? `series-${series.id}` : 0}>
+                <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
+                  <AspectRatio ratioHeight={9} ratioWidth={16}>
                     <div className="relative size-full bg-[#1a1a1a]">
                       <OptimizedImage
                         alt={series.title}
                         className="h-auto w-full"
                         height={158}
-                        priority={false}
-                        src={showThumbnail ? series.thumbnailUrl : '/images/037.webp'}
+                        loading={isFirstRow ? 'eager' : 'lazy'}
+                        priority={isFirstRow}
+                        src={series.thumbnailUrl}
                         width={280}
                       />
                     </div>
                   </AspectRatio>
-                </Flipped>
-              </div>
-              <div className="h-[64px] w-full p-[8px]">
-                <div className="text-[14px] font-bold text-[#ffffff] line-clamp-2">
-                  <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
                 </div>
+              </Flipped>
+              <div className="h-[88px] w-full p-[8px]">
+                <h3 className="mb-[4px] text-[14px] font-bold text-[#ffffff] line-clamp-2 overflow-hidden text-ellipsis">
+                  {series.title}
+                </h3>
               </div>
             </>
           );

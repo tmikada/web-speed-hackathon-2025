@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { Link, Params, useNavigate, useParams } from 'react-router';
 import { useUpdate } from 'react-use';
@@ -159,19 +158,19 @@ export const ProgramPage = () => {
         </Flipped>
 
         <div className="mb-[24px]">
-          <div className="text-[16px] text-[#ffffff]">
-            <Ellipsis ellipsis reflowOnResize maxLine={1} text={program.episode.series.title} visibleLine={1} />
+          <div className="text-[16px] text-[#ffffff] line-clamp-1 overflow-hidden text-ellipsis">
+            {program.episode.series.title}
           </div>
-          <h1 className="mt-[8px] text-[22px] font-bold text-[#ffffff]">
-            <Ellipsis ellipsis reflowOnResize maxLine={2} text={program.title} visibleLine={2} />
+          <h1 className="mt-[8px] text-[22px] font-bold text-[#ffffff] line-clamp-2 overflow-hidden text-ellipsis">
+            {program.title}
           </h1>
           <div className="mt-[8px] text-[16px] text-[#999999]">
             {formatDate(program.startAt)}
             {' 〜 '}
             {formatDate(program.endAt)}
           </div>
-          <div className="mt-[16px] text-[16px] text-[#999999]">
-            <Ellipsis ellipsis reflowOnResize maxLine={3} text={program.description} visibleLine={3} />
+          <div className="mt-[16px] text-[16px] text-[#999999] line-clamp-3 overflow-hidden text-ellipsis">
+            {program.description}
           </div>
         </div>
 

@@ -1,5 +1,4 @@
 import { Suspense, lazy, useState } from 'react';
-import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { type Params, useParams } from 'react-router';
 import invariant from 'tiny-invariant';
@@ -79,7 +78,7 @@ export const EpisodePage = () => {
     <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-y-[24px]">
         <Flipped flipId={`episode-${episode.id}`}>
-          <div className="relative h-[calc((100vw-2rem)*9/16)] max-h-[calc((100vw-2rem)*9/16)] w-full max-w-[1280px] bg-[#1a1a1a]">
+          <div className="relative w-full max-w-[1280px] aspect-video bg-[#1a1a1a]">
             {episode.premium && user == null ? (
               <AspectRatio 
                 ratioHeight={9} 
@@ -163,11 +162,13 @@ export const EpisodePage = () => {
         </Flipped>
 
         <div className="w-full">
-          <div className="h-[24px] text-[16px] text-[#ffffff]">
-            <Ellipsis ellipsis reflowOnResize maxLine={1} text={episode.series.title} visibleLine={1} />
+          <div className="h-[24px] text-[16px] text-[#ffffff] overflow-hidden">
+            <div className="line-clamp-1 overflow-hidden text-ellipsis">
+              {episode.series.title}
+            </div>
           </div>
-          <h1 className="mt-[8px] h-[64px] text-[22px] font-bold text-[#ffffff]">
-            <Ellipsis ellipsis reflowOnResize maxLine={2} text={episode.title} visibleLine={2} />
+          <h1 className="mt-[8px] h-[56px] text-[22px] font-bold text-[#ffffff] line-clamp-2 overflow-hidden text-ellipsis">
+            {episode.title}
           </h1>
           {episode.premium ? (
             <div className="mt-[8px] h-[24px]">
@@ -176,8 +177,8 @@ export const EpisodePage = () => {
               </span>
             </div>
           ) : null}
-          <div className="mt-[16px] h-[72px] text-[16px] text-[#999999]">
-            <Ellipsis ellipsis reflowOnResize maxLine={3} text={episode.description} visibleLine={3} />
+          <div className="mt-[16px] h-[72px] text-[16px] text-[#999999] line-clamp-3 overflow-hidden text-ellipsis">
+            {episode.description}
           </div>
         </div>
 

@@ -1,4 +1,3 @@
-import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
 import { Params, useParams } from 'react-router';
 import invariant from 'tiny-invariant';
@@ -45,11 +44,11 @@ export const SeriesPage = () => {
             />
           </Flipped>
           <div className="grow-1 shrink-1 overflow-hidden">
-            <h1 className="mb-[16px] text-[32px] font-bold text-[#ffffff]">
-              <Ellipsis ellipsis reflowOnResize maxLine={2} text={series.title} visibleLine={2} />
+            <h1 className="mb-[16px] text-[32px] font-bold text-[#ffffff] line-clamp-2 overflow-hidden text-ellipsis">
+              {series.title}
             </h1>
-            <div className="text-[14px] text-[#999999]">
-              <Ellipsis ellipsis reflowOnResize maxLine={3} text={series.description} visibleLine={3} />
+            <div className="text-[14px] text-[#999999] line-clamp-3 overflow-hidden text-ellipsis">
+              {series.description}
             </div>
           </div>
         </header>
