@@ -13,11 +13,15 @@ class ShakaPlayerWrapper implements PlayerWrapper {
     muted: true,
     volume: 0.25,
   });
-  private _player = new shaka.Player();
+  private _player: any;
   readonly playerType: PlayerType.ShakaPlayer;
 
   constructor(playerType: PlayerType.ShakaPlayer) {
     this.playerType = playerType;
+  }
+
+  async initialize(): Promise<void> {
+    this._player = new shaka.Player();
     this._player.configure({
       streaming: {
         bufferingGoal: 50,
@@ -71,14 +75,18 @@ class HlsJSPlayerWrapper implements PlayerWrapper {
     muted: true,
     volume: 0.25,
   });
-  private _player = new HlsJs({
-    enableWorker: false,
-    maxBufferLength: 50,
-  });
+  private _player: any;
   readonly playerType: PlayerType.HlsJS;
 
   constructor(playerType: PlayerType.HlsJS) {
     this.playerType = playerType;
+  }
+
+  async initialize(): Promise<void> {
+    this._player = new HlsJs({
+      enableWorker: false,
+      maxBufferLength: 50,
+    });
   }
 
   get currentTime(): number {
@@ -130,14 +138,20 @@ class VideoJSPlayerWrapper implements PlayerWrapper {
     muted: true,
     volume: 0.25,
   });
-  private _player = videojs(this.videoElement);
+  private _player: any;
   readonly playerType: PlayerType.VideoJS;
 
   constructor(playerType: PlayerType.VideoJS) {
+    this.playerType = playerType;
+  }
+
+  async initialize(): Promise<void> {
+    await import('@videojs/http-streaming');
+    const videojs = (await import('video.js')).default;
+    this._player = videojs(this.videoElement);
     const vhsConfig = (videojs as unknown as { Vhs: VhsConfig }).Vhs;
     vhsConfig.GOAL_BUFFER_LENGTH = 50;
     vhsConfig.MAX_GOAL_BUFFER_LENGTH = 50;
-    this.playerType = playerType;
   }
 
   get currentTime(): number {
@@ -177,20 +191,28 @@ class VideoJSPlayerWrapper implements PlayerWrapper {
   }
 }
 
-export const createPlayer = (playerType: PlayerType): PlayerWrapper => {
+export const createPlayer = async (playerType: PlayerType): Promise<PlayerWrapper> => {
+  let player: PlayerWrapper;
   switch (playerType) {
     case PlayerType.ShakaPlayer: {
-      return new ShakaPlayerWrapper(playerType);
+      player = new ShakaPlayerWrapper(playerType);
+      await (player as ShakaPlayerWrapper).initialize();
+      break;
     }
     case PlayerType.HlsJS: {
-      return new HlsJSPlayerWrapper(playerType);
+      player = new HlsJSPlayerWrapper(playerType);
+      await (player as HlsJSPlayerWrapper).initialize();
+      break;
     }
     case PlayerType.VideoJS: {
-      return new VideoJSPlayerWrapper(playerType);
+      player = new VideoJSPlayerWrapper(playerType);
+      await (player as VideoJSPlayerWrapper).initialize();
+      break;
     }
     default: {
       playerType satisfies never;
       throw new Error('Invalid player type.');
     }
   }
+  return player;
 };

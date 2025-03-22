@@ -24,11 +24,14 @@ export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: 
     const abortController = new AbortController();
     let player: PlayerWrapper | null = null;
 
-    void import('@wsh-2025/client/src/features/player/logics/create_player').then(({ createPlayer }) => {
+    void (async () => {
+      try {
+        const { createPlayer } = await import('@wsh-2025/client/src/features/player/logics/create_player');
         if (abortController.signal.aborted) {
           return;
         }
-        player = createPlayer(playerType);
+
+        player = await createPlayer(playerType);
         
         // 動画の読み込み状態を監視
         const handleLoadStart = () => {
@@ -54,7 +57,11 @@ export const Player = ({ className, loop, playerRef, playerType, playlistUrl }: 
           player?.videoElement.removeEventListener('canplay', handleCanPlay);
           player?.videoElement.removeEventListener('error', handleError);
         };
-    });
+      } catch (error) {
+        console.error('Failed to initialize player:', error);
+        setIsLoading(false);
+      }
+    })();
 
     return () => {
       abortController.abort();

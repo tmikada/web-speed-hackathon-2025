@@ -12,3 +12,8 @@ declare module '*?arraybuffer' {
   const value: ArrayBuffer;
   export = value;
 }
+
+declare module '@videojs/http-streaming' {
+  const content: any;
+  export default content;
+}
