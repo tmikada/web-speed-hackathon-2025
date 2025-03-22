@@ -33,20 +33,20 @@ export const JumbotronSection = ({ module }: Props) => {
         {({ isTransitioning }) => {
           return (
             <>
-              <div className="grow-1 shrink-1 p-[24px]">
-                <div className="mb-[16px] w-full text-center text-[22px] font-bold text-[#ffffff]">
+              <div className="flex min-w-0 grow basis-3/5 flex-col justify-center p-[24px]">
+                <div className="mb-[16px] min-h-[66px] w-full text-center text-[22px] font-bold text-[#ffffff]">
                   <Ellipsis ellipsis reflowOnResize maxLine={2} text={episode.title} visibleLine={2} />
                 </div>
-                <div className="w-full text-center text-[14px] font-bold text-[#ffffff]">
+                <div className="min-h-[63px] w-full text-center text-[14px] font-bold text-[#ffffff]">
                   <Ellipsis ellipsis reflowOnResize maxLine={3} text={episode.description} visibleLine={3} />
                 </div>
               </div>
 
               <Flipped stagger flipId={isTransitioning ? `episode-${episode.id}` : 0}>
-                <div className="h-full w-auto shrink-0 grow-0">
+                <div className="aspect-video h-[260px] w-[462px] shrink-0">
                   <Player
                     loop
-                    className="size-full"
+                    className="size-full object-cover"
                     playerRef={playerRef}
                     playerType={PlayerType.ShakaPlayer}
                     playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
