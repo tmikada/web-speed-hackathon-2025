@@ -1,6 +1,5 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
-import { Parser } from 'm3u8-parser';
 import { use } from 'react';
 
 interface Params {
@@ -65,6 +64,7 @@ async function getSeekThumbnail({ episode }: Params): Promise<string> {
   try {
     // HLS のプレイリストを取得
     const playlistUrl = `/streams/episode/${episode.id}/playlist.m3u8`;
+    const { Parser } = await import(/* webpackChunkName: "m3u8-parser" */ 'm3u8-parser');
     const parser = new Parser();
     const playlistResponse = await fetch(playlistUrl);
     if (!playlistResponse.ok) {

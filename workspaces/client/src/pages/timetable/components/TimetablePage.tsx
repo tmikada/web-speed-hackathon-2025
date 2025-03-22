@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+// import { DateTime } from 'luxon';
 import invariant from 'tiny-invariant';
 
 import { createStore } from '@wsh-2025/client/src/app/createStore';
@@ -10,9 +10,11 @@ import { TimelineYAxis } from '@wsh-2025/client/src/pages/timetable/components/T
 import { useShownNewFeatureDialog } from '@wsh-2025/client/src/pages/timetable/hooks/useShownNewFeatureDialog';
 
 export const prefetch = async (store: ReturnType<typeof createStore>) => {
-  const now = DateTime.now();
-  const since = now.startOf('day').toISO();
-  const until = now.endOf('day').toISO();
+  const now = new Date();
+  // 当日の0:00:00を取得
+  const since = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  // 翌日の23:59:59を取得
+  const until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 23, 59, 59).toISOString();
 
   const channels = await store.getState().features.channel.fetchChannels();
   const programs = await store.getState().features.timetable.fetchTimetable({ since, until });

@@ -13,7 +13,12 @@ import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 /** @type {import('webpack').Configuration} */
 const config = {
   devtool: process.env['NODE_ENV'] === 'production' ? 'source-map' : 'inline-source-map',
-  entry: './src/main.tsx',
+  entry: {
+    main: {
+      import: ['./src/main.tsx'],
+      filename: '[name].[contenthash].js',
+    },
+  },
   // mode: process.env['NODE_ENV'] === 'production' ? 'production' : 'development',
   mode: 'production',
   module: {
@@ -30,10 +35,11 @@ const config = {
               [
                 '@babel/preset-env',
                 {
-                  corejs: '3.41',
-                  forceAllTransforms: true,
-                  targets: 'defaults',
-                  useBuiltIns: 'entry',
+                  modules: false,
+                  useBuiltIns: false,
+                  targets: {
+                    browsers: ['last 2 versions', 'not dead'],
+                  },
                 },
               ],
               ['@babel/preset-react', { runtime: 'automatic' }],
@@ -86,12 +92,6 @@ const config = {
           test: /[\\/]node_modules[\\/](react|react-dom|@remix-run)[\\/]/,
           name: 'vendor.react',
           priority: 20,
-          reuseExistingChunk: true,
-        },
-        polyfills: {
-          test: /[\\/]node_modules[\\/](core-js|regenerator-runtime|@babel\/runtime)[\\/]/,
-          name: 'vendor.polyfills',
-          priority: 19,
           reuseExistingChunk: true,
         },
         hls: {

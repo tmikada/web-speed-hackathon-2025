@@ -1,5 +1,4 @@
-import HlsJs from 'hls.js';
-
+import type Hls from 'hls.js';
 import { PlayerType } from '@wsh-2025/client/src/features/player/constants/player_type';
 import { PlayerWrapper } from '@wsh-2025/client/src/features/player/interfaces/player_wrapper';
 
@@ -10,7 +9,7 @@ class HlsJSPlayerWrapper implements PlayerWrapper {
     muted: true,
     volume: 0.25,
   });
-  private _player: HlsJs;
+  private _player!: Hls;
   readonly playerType: PlayerType.HlsJS;
 
   constructor(playerType: PlayerType.HlsJS) {
@@ -18,6 +17,7 @@ class HlsJSPlayerWrapper implements PlayerWrapper {
   }
 
   async initialize(): Promise<void> {
+    const { default: HlsJs } = await import(/* webpackChunkName: "hls.js" */ 'hls.js');
     this._player = new HlsJs({
       enableWorker: false,
       maxBufferLength: 50,
