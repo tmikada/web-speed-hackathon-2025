@@ -109,14 +109,13 @@ export function registerSsr(app: FastifyInstance): void {
           <link rel="preconnect" href="/public/" />
           ${jsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
           ${imagePaths
-            .filter(path => path.match(/\.(webp|jpe?g|png|gif|svg)$/))
+            .filter(path => {
+              // サムネイル画像のみをプリロードの対象とする
+              return path.match(/\.(webp|jpe?g)$/) && path.includes('thumbnail');
+            })
+            .slice(0, 5) // 最初の5つの画像のみをプリロード
             .map((imagePath) => {
-              // ファーストビューに表示される重要な画像のみを高優先度でプリロード
-              if (imagePath.includes('thumbnail')) {
-                return `<link rel="preload" as="fetch" fetchpriority="high" href="${imagePath}" />`;
-              }
-              // その他の画像は非同期でプリフェッチ
-              return `<link rel="prefetch" href="${imagePath}" />`;
+              return `<link rel="preload" as="image" fetchpriority="high" href="${imagePath}" />`;
             })
             .join('\n')}
         </head>

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 interface Props {
   alt: string;
@@ -19,11 +19,22 @@ export const OptimizedImage = memo(function OptimizedImage({
   src,
   width
 }: Props) {
-  // GIFの場合は直接読み込む
-  const isGif = src.toLowerCase().endsWith('.gif');
-  // GIF以外の場合はWebPのパスを生成
-  const webpSrc = isGif ? src : src.replace(/\.(jpe?g)$/, '.webp');
-  
+  const [currentSrc, setCurrentSrc] = useState<string>(() => {
+    // GIFの場合は直接読み込む
+    const isGif = src.toLowerCase().endsWith('.gif');
+    // GIF以外の場合はWebPのパスを生成
+    return isGif ? src : src.replace(/\.(jpe?g)$/, '.webp');
+  });
+
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    // srcが変更された場合、エラー状態をリセットし新しいsrcを設定
+    setHasError(false);
+    const isGif = src.toLowerCase().endsWith('.gif');
+    setCurrentSrc(isGif ? src : src.replace(/\.(jpe?g)$/, '.webp'));
+  }, [src]);
+
   return (
     <img
       alt={alt}
@@ -33,14 +44,11 @@ export const OptimizedImage = memo(function OptimizedImage({
       height={height}
       loading={priority ? 'eager' : loading}
       sizes={width ? `${width}px` : '100vw'}
-      src={webpSrc}
+      src={hasError ? src : currentSrc}
       width={width}
-      onError={(e) => {
-        // WebPがサポートされていない場合や読み込みエラー時は元の画像にフォールバック
-        const target = e.target as HTMLImageElement;
-        if (!isGif && target.src !== src) {
-          target.onerror = null; // 無限ループを防ぐ
-          target.src = src; // 元の画像にフォールバック
+      onError={() => {
+        if (!hasError) {
+          setHasError(true);
         }
       }}
     />
