@@ -75,7 +75,7 @@ export function registerSsr(app: FastifyInstance): void {
     }
 
     const router = createStaticRouter(handler.dataRoutes, context);
-    renderToString(
+    const content = renderToString(
       <StrictMode>
         <StoreProvider createStore={() => store}>
           <StaticRouterProvider context={context} hydrate={false} router={router} />
@@ -109,6 +109,33 @@ export function registerSsr(app: FastifyInstance): void {
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
           <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
           <link rel="preconnect" href="/public/" />
+          <script>
+            // UnoCSS/Tailwindのスタイルを即時適用
+            (function() {
+              const style = document.createElement('style');
+              style.textContent = \`
+                .line-clamp-1 {
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                }
+                .line-clamp-2 {
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                }
+                .line-clamp-3 {
+                  display: -webkit-box;
+                  -webkit-line-clamp: 3;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                }
+              \`;
+              document.head.appendChild(style);
+            })();
+          </script>
           ${criticalJsFiles.map(file => `<script src="${file}"></script>`).join('\n')}
           ${deferredJsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
           ${imagePaths

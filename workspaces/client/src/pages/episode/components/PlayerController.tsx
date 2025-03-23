@@ -1,7 +1,6 @@
 import * as Slider from '@radix-ui/react-slider';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
-import { Duration } from 'luxon';
 import { Suspense, lazy } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -18,6 +17,12 @@ const SeekThumbnail = lazy(() => import('@wsh-2025/client/src/pages/episode/comp
 interface Props {
   episode: StandardSchemaV1.InferOutput<typeof schema.getEpisodeByIdResponse>;
 }
+
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
 
 export const PlayerController = ({ episode }: Props) => {
   const duration = useDuration();
@@ -74,9 +79,9 @@ export const PlayerController = ({ episode }: Props) => {
               </Hoverable>
 
               <span className="ml-[4px] block shrink-0 grow-0 text-[12px] font-bold text-[#FFFFFF]">
-                {Duration.fromObject({ seconds: currentTime }).toFormat('mm:ss')}
+                {formatTime(currentTime)}
                 {' / '}
-                {Duration.fromObject({ seconds: duration }).toFormat('mm:ss')}
+                {formatTime(duration)}
               </span>
             </div>
           </div>

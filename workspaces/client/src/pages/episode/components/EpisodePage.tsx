@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useState, useEffect } from 'react';
 import { Flipped } from 'react-flip-toolkit';
 import { type Params, useParams } from 'react-router';
 import invariant from 'tiny-invariant';
@@ -13,7 +13,7 @@ import { PlayerType } from '@wsh-2025/client/src/features/player/constants/playe
 import { RecommendedSection } from '@wsh-2025/client/src/features/recommended/components/RecommendedSection';
 import { useRecommended } from '@wsh-2025/client/src/features/recommended/hooks/useRecommended';
 import { SeriesEpisodeList } from '@wsh-2025/client/src/features/series/components/SeriesEpisodeList';
-import { PlayerController } from '@wsh-2025/client/src/pages/episode/components/PlayerController';
+import { PlayerController as PlayerControllerComponent } from '@wsh-2025/client/src/pages/episode/components/PlayerController';
 import { usePlayerRef } from '@wsh-2025/client/src/pages/episode/hooks/usePlayerRef';
 
 const Player = lazy(() => import('@wsh-2025/client/src/features/player/components/Player').then(module => ({
@@ -41,6 +41,16 @@ export const EpisodePage = () => {
   const { openSignInDialog } = useAuthActions();
   const [showPremiumThumbnail, setShowPremiumThumbnail] = useState(false);
   const [showLoadingThumbnail, setShowLoadingThumbnail] = useState(false);
+  const [shouldLoadPlayer, setShouldLoadPlayer] = useState(false);
+
+  useEffect(() => {
+    // メイン画面表示から1秒後にプレイヤーをロード開始
+    const timer = setTimeout(() => {
+      setShouldLoadPlayer(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (episode == null) {
     return (
@@ -145,15 +155,34 @@ export const EpisodePage = () => {
                   ratioWidth={16}
                 >
                   <div className="relative size-full">
-                    <Player
-                      className="size-full"
-                      playerRef={playerRef}
-                      playerType={PlayerType.HlsJS}
-                      playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
-                    />
-                    <div className="absolute inset-x-0 bottom-0">
-                      <PlayerController episode={episode} />
-                    </div>
+                    {shouldLoadPlayer ? (
+                      <>
+                        <Player
+                          className="size-full"
+                          playerRef={playerRef}
+                          playerType={PlayerType.HlsJS}
+                          playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
+                        />
+                        <div className="absolute inset-x-0 bottom-0">
+                          <PlayerControllerComponent episode={episode} />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="relative size-full">
+                        <OptimizedImage
+                          priority
+                          alt={episode.title}
+                          className="size-full object-cover"
+                          height={720}
+                          src={episode.thumbnailUrl}
+                          width={1280}
+                        />
+                        <div className="absolute inset-0 bg-[#00000077]" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="i-line-md:loading-twotone-loop size-[48px] text-[#ffffff] bg-current" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </AspectRatio>
               </Suspense>

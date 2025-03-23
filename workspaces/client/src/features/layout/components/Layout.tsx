@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import classNames from 'classnames';
 import { ReactNode, useEffect, useState } from 'react';
 import { Flipper } from 'react-flip-toolkit';
 import { Link, useLocation, useNavigation } from 'react-router';
@@ -38,15 +38,22 @@ export const Layout = ({ children }: Props) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollTopOffset(window.scrollY);
+      const currentScroll = window.scrollY;
+      if (Math.abs(currentScroll - scrollTopOffset) > 5) {
+        setScrollTopOffset(currentScroll);
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    const throttledHandleScroll = () => {
+      requestAnimationFrame(handleScroll);
+    };
+
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', throttledHandleScroll);
     };
-  }, []);
+  }, [scrollTopOffset]);
 
   useEffect(() => {
     setShouldHeaderBeTransparent(scrollTopOffset > 80);
@@ -66,15 +73,29 @@ export const Layout = ({ children }: Props) => {
       }
     };
 
-    const timer = setInterval(checkIconsLoaded, 100);
-    const timeout = setTimeout(() => {
-      clearInterval(timer);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            checkIconsLoaded();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const timer = setTimeout(() => {
       setIconsLoaded(true);
     }, 2000);
 
+    const nav = document.querySelector('nav');
+    if (nav) {
+      observer.observe(nav);
+    }
+
     return () => {
-      clearInterval(timer);
-      clearTimeout(timeout);
+      clearTimeout(timer);
+      observer.disconnect();
     };
   }, []);
 
@@ -84,7 +105,7 @@ export const Layout = ({ children }: Props) => {
     <>
       <div className="grid h-auto min-h-[100vh] w-full grid-cols-[188px_minmax(0,1fr)] grid-rows-[80px_calc(100vh-80px)_minmax(0,1fr)] flex-col [grid-template-areas:'a1_b1''a2_b2''a3_b3']">
         <header
-          className={clsx(
+          className={classNames(
             'sticky top-[0px] z-10 order-1 flex h-[80px] w-full flex-row [grid-area:a1/a1/b1/b1] transition-colors duration-200',
             !isLoading && shouldHeaderBeTransparent
               ? 'bg-gradient-to-b from-[#171717] to-transparent'
@@ -107,10 +128,10 @@ export const Layout = ({ children }: Props) => {
           <nav className="w-full">
             <button
               className="block flex h-[56px] w-full items-center justify-center bg-transparent pb-[8px] pl-[20px] pr-[8px] pt-[8px]"
-              onClick={isSignedIn ? authActions.openSignOutDialog : authActions.openSignInDialog}
               type="button"
+              onClick={isSignedIn ? authActions.openSignOutDialog : authActions.openSignInDialog}
             >
-              <div className={clsx(
+              <div className={classNames(
                 'm-[4px] size-[20px] shrink-0',
                 iconsLoaded 
                   ? `i-fa-solid:${isSignedIn ? 'sign-out-alt' : 'user'}`
@@ -125,7 +146,7 @@ export const Layout = ({ children }: Props) => {
               className="block flex h-[56px] w-full items-center justify-center pb-[8px] pl-[20px] pr-[8px] pt-[8px]"
               to="/"
             >
-              <div className={clsx(
+              <div className={classNames(
                 'm-[4px] size-[20px] shrink-0',
                 iconsLoaded 
                   ? 'i-bi:house-fill'
@@ -138,7 +159,7 @@ export const Layout = ({ children }: Props) => {
               className="block flex h-[56px] w-full items-center justify-center pb-[8px] pl-[20px] pr-[8px] pt-[8px]"
               to="/timetable"
             >
-              <div className={clsx(
+              <div className={classNames(
                 'm-[4px] size-[20px] shrink-0',
                 iconsLoaded 
                   ? 'i-fa-solid:calendar'
@@ -149,7 +170,7 @@ export const Layout = ({ children }: Props) => {
           </nav>
         </aside>
 
-        <main className={clsx(
+        <main className={classNames(
           'min-h-[calc(100vh-80px)] w-full',
           'content-visibility-auto contain-intrinsic-size-[1000px]',
           isTimetablePage ? '[grid-area:b2]' : '[grid-area:b2/b2/b3/b3]'

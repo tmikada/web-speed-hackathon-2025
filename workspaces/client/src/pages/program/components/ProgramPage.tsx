@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Flipped } from 'react-flip-toolkit';
 import { Link, Params, useNavigate, useParams } from 'react-router';
-import { useUpdate } from 'react-use';
 import invariant from 'tiny-invariant';
 
 import { createStore } from '@wsh-2025/client/src/app/createStore';
@@ -15,6 +14,11 @@ import { SeriesEpisodeList } from '@wsh-2025/client/src/features/series/componen
 import { useTimetable } from '@wsh-2025/client/src/features/timetable/hooks/useTimetable';
 import { PlayerController } from '@wsh-2025/client/src/pages/program/components/PlayerController';
 import { usePlayerRef } from '@wsh-2025/client/src/pages/program/hooks/usePlayerRef';
+
+const useUpdate = () => {
+  const [, setState] = useState({});
+  return useCallback(() => setState({}), []);
+};
 
 export const prefetch = async (store: ReturnType<typeof createStore>, { programId }: Params) => {
   invariant(programId);
@@ -44,25 +48,36 @@ export const ProgramPage = () => {
 
   const program = useProgramById({ programId });
   if (!program) {
-    return null; // Early return if program is not available
+    return null;
   }
 
   const timetable = useTimetable();
+  const modules = useRecommended({ referenceId: programId });
+  const playerRef = usePlayerRef();
+  const navigate = useNavigate();
+
+  const [currentTime, setCurrentTime] = useState(() => {
+    // サーバーサイドでは番組開始時刻を初期値として使用
+    return new Date(program.startAt).getTime();
+  });
+
+  const isArchivedRef = useRef(false);
+  const [isBroadcastStarted, setIsBroadcastStarted] = useState(false);
+
+  useEffect(() => {
+    // クライアントサイドでのみ現在時刻を更新
+    setCurrentTime(Date.now());
+    isArchivedRef.current = new Date(program.endAt).getTime() <= Date.now();
+    setIsBroadcastStarted(new Date(program.startAt).getTime() <= Date.now());
+  }, [program.endAt, program.startAt]);
+
   const nextProgram = timetable[program.channel.id]?.find((p) => {
     const endTime = new Date(program.endAt).getTime();
     const startTime = new Date(p.startAt).getTime();
     return endTime === startTime;
   });
 
-  const modules = useRecommended({ referenceId: programId });
-
-  const playerRef = usePlayerRef();
-
   const forceUpdate = useUpdate();
-  const navigate = useNavigate();
-  const currentTime = new Date().getTime();
-  const isArchivedRef = useRef(new Date(program.endAt).getTime() <= currentTime);
-  const isBroadcastStarted = new Date(program.startAt).getTime() <= currentTime;
 
   useEffect(() => {
     if (isArchivedRef.current) {
@@ -72,6 +87,7 @@ export const ProgramPage = () => {
     // 放送前であれば、放送開始になるまで画面を更新し続ける
     if (!isBroadcastStarted) {
       let timeoutId = setTimeout(function tick() {
+        setCurrentTime(Date.now());
         forceUpdate();
         timeoutId = setTimeout(tick, 250);
       }, 250);
@@ -82,7 +98,7 @@ export const ProgramPage = () => {
 
     // 放送中に次の番組が始まったら、画面をそのままにしつつ、情報を次の番組にする
     let timeoutId = setTimeout(function tick() {
-      const now = new Date().getTime();
+      const now = Date.now();
       const endTime = new Date(program.endAt).getTime();
       if (now < endTime) {
         timeoutId = setTimeout(tick, 250);
@@ -104,7 +120,7 @@ export const ProgramPage = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isBroadcastStarted, nextProgram?.id, navigate, program.endAt]);
+  }, [isBroadcastStarted, nextProgram?.id, navigate, program.endAt, forceUpdate]);
 
   return (
     <>

@@ -548,7 +548,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
                     columns: {
                       id: true,
                       title: true,
-                      description: true,
+                      // description: true,
                       order: true,
                       seriesId: true,
                       streamId: true,
@@ -581,24 +581,24 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
                       description: true,
                       thumbnailUrl: true,
                     },
-                    with: {
-                      episodes: {
-                        columns: {
-                          id: true,
-                          title: true,
-                          description: true,
-                          order: true,
-                          seriesId: true,
-                          streamId: true,
-                          thumbnailUrl: true,
-                          premium: true,
-                        },
-                        orderBy(episode, { asc }) {
-                          return asc(episode.order);
-                        },
-                        limit: 1,
-                      },
-                    },
+                    // with: {
+                    //   episodes: {
+                    //     columns: {
+                    //       id: true,
+                    //       title: true,
+                    //       description: true,
+                    //       order: true,
+                    //       seriesId: true,
+                    //       streamId: true,
+                    //       thumbnailUrl: true,
+                    //       premium: true,
+                    //     },
+                    //     orderBy(episode, { asc }) {
+                    //       return asc(episode.order);
+                    //     },
+                    //     limit: 1,
+                    //   },
+                    // },
                   },
                 },
               },

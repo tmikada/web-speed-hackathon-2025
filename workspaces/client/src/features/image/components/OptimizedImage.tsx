@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   alt: string;
@@ -10,7 +10,7 @@ interface Props {
   width: number;
 }
 
-export const OptimizedImage = memo(function OptimizedImage({ 
+export function OptimizedImage({ 
   alt,
   className,
   height,
@@ -53,4 +53,4 @@ export const OptimizedImage = memo(function OptimizedImage({
       }}
     />
   );
-}); 
+} 

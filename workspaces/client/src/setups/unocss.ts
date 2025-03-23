@@ -1,6 +1,7 @@
 import presetIcons from '@unocss/preset-icons/browser';
-import presetWind3 from '@unocss/preset-wind3';
+import presetMini from '@unocss/preset-mini';
 import initUnocssRuntime, { defineConfig } from '@unocss/runtime';
+import type { Preset } from '@unocss/core';
 
 // 必要なアイコンのみを含むカスタムコレクション
 const customCollections = {
@@ -94,6 +95,16 @@ async function init() {
             max-height: 100%;
             max-width: 100%;
           }
+          dialog::backdrop {
+            background: rgba(0, 0, 0, 0.47);
+          }
+          dialog {
+            padding: 0;
+            border: none;
+            background: transparent;
+            max-width: 100vw;
+            max-height: 100vh;
+          }
         `,
         },
         {
@@ -110,7 +121,7 @@ async function init() {
         },
       ],
       presets: [
-        presetWind3(),
+        presetMini() as Preset,
         presetIcons({
           collections: customCollections,
         }),
