@@ -23,10 +23,11 @@ const useMergeRefs = <T,>(refs: (Ref<T> | null | undefined)[]) => {
 };
 
 interface Props {
-  module: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
+  id: string;
+  // module: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
 }
 
-export const CarouselSection = ({ module }: Props) => {
+export const CarouselSection = ({ id }: Props) => {
   const containerRefForScrollSnap = useScrollSnap({ scrollPadding: 24 });
   const { ref: containerRefForItemWidth, width: itemWidth } = useCarouselItemWidth();
   const mergedRef = useMergeRefs([containerRefForItemWidth, containerRefForScrollSnap]);
@@ -44,8 +45,8 @@ export const CarouselSection = ({ module }: Props) => {
           >
             {module.items.map((item, index) => (
               <div key={item.id} className="w-[316px] shrink-0" style={itemWidth ? { width: `${itemWidth}px` } : undefined}>
-                {item.series != null ? <SeriesItem series={item.series} /> : null}
-                {item.episode != null ? <EpisodeItem episode={item.episode} index={index} /> : null}
+                {item.series != null ? <SeriesItem id={item.series.id} thumbnailUrl={item.series.thumbnailUrl} title={item.series.title} /> : null}
+                {item.episode != null ? <EpisodeItem id={item.episode.id} seriesThumbnailUrl={item.episode.series.thumbnailUrl} episodeTitle={item.episode.title} seriesTitle={item.episode.series.title} premium={item.episode.premium} index={index} /> : null}
               </div>
             ))}
           </div>

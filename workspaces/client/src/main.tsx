@@ -27,6 +27,8 @@ function main() {
       </StoreProvider>
     </StrictMode>,
   );
+
+
 }
 
 document.addEventListener('DOMContentLoaded', main);
