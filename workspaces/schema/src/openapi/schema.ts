@@ -199,26 +199,6 @@ export const getRecommendedModulesResponse = z.array(
   }),
 );
 
-// GET /recommended2/:referenceId
-export const getRecommendedModules2RequestParams = z.object({
-  referenceId: z.string(),
-});
-export const getRecommendedModules2Response = z.array(
-  recommendedModule.extend({
-    items: z.array(
-      recommendedItem.extend({
-        series: z.object({
-          id: z.number()
-        }).nullable(),
-        episode: z.object({
-          id: z.number()
-        }).nullable()
-      })
-    )
-  })
-);
-
-
 // POST /signIn
 export const signInRequestBody = z.object({
   email: z.string(),

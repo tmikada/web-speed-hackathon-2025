@@ -13,17 +13,12 @@ import { PlayerWrapper } from '../../player/interfaces/player_wrapper';
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
 
 interface Props {
-  id: string;
-  // title: string;
-  // description: string;
-  // episode: Episode;
-  // module: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
+  module: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
 }
 
-export const JumbotronSection = ({ id }: Props) => {
+export const JumbotronSection = ({ module }: Props) => {
   const playerRef = useRef<PlayerWrapper>(null);
 
-  // idからepisodeを取得
   const episode = module.items[0]?.episode;
   invariant(episode);
 
@@ -32,7 +27,7 @@ export const JumbotronSection = ({ id }: Props) => {
       <NavLink
         viewTransition
         className="block flex h-[260px] w-full flex-row items-center justify-center overflow-hidden rounded-[8px] bg-[#171717]"
-        to={`/episodes/${id}`}
+        to={`/episodes/${episode.id}`}
       >
         {({ isTransitioning }) => {
           return (
@@ -46,13 +41,13 @@ export const JumbotronSection = ({ id }: Props) => {
                 </div>
               </div>
 
-              <Flipped stagger flipId={isTransitioning ? `episode-${id}` : 0}>
+              <Flipped stagger flipId={isTransitioning ? `episode-${episode.id}` : 0}>
                 <div className="aspect-video h-[260px] w-[462px] shrink-0">
                   <Player
                     loop
                     playerRef={playerRef}
                     playerType={PlayerType.HlsJS}
-                    playlistUrl={`/streams/episode/${id}/playlist.m3u8`}
+                    playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
                   />
                 </div>
               </Flipped>
