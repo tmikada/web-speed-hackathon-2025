@@ -91,13 +91,15 @@ export function registerSsr(app: FastifyInstance): void {
     ].flat();
 
     // JavaScriptファイルの読み込み順序を制御
-    const jsFiles = [
-      manifest['runtime.js'] || '',         // ランタイムを最初に
-      manifest['main.js'] || '',           // メインバンドル
-      ...Object.entries(manifest)     // その他のチャンク
-        .filter(([key]) => key.startsWith('vendor.') || key.startsWith('common.'))
-        .map(([, value]) => value)
+    const criticalJsFiles = [
+      manifest['runtime.js'] || '',  // ランタイムを最初に
+      manifest['main.js'] || '',     // メインバンドル
     ].filter(Boolean);
+
+    const deferredJsFiles = Object.entries(manifest)
+      .filter(([key]) => key.startsWith('vendor.') || key.startsWith('common.'))
+      .map(([, value]) => value)
+      .filter(Boolean);
 
     reply.type('text/html').send(/* html */ `
       <!DOCTYPE html>
@@ -107,22 +109,11 @@ export function registerSsr(app: FastifyInstance): void {
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
           <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
           <link rel="preconnect" href="/public/" />
-          ${jsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
+          ${criticalJsFiles.map(file => `<script src="${file}"></script>`).join('\n')}
+          ${deferredJsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
           ${imagePaths
-            .filter(path => {
-              // サムネイル画像のみをプリロードの対象とする
-              // return path.match(/\.(webp|jpe?g)$/) && path.includes('thumbnail');
-              return path.match(/\.(webp|jpe?g)$/);
-            })
-            // .slice(0, 10) // 最初の10つの画像のみをプリロード
-            .map((imagePath) => {
-              // ファーストビューに表示される重要な画像のみを高優先度でプリロード
-              // if (imagePath.includes('thumbnail')) {
-                // return `<link rel="preload" as="fetch" fetchpriority="high" href="${imagePath}" />`;
-              // }
-              // その他の画像は非同期でプリフェッチ
-              return `<link rel="prefetch" href="${imagePath}" />`;
-            })
+            .filter(path => path.match(/\.(webp|jpe?g)$/))
+            .map(() => '')
             .join('\n')}
         </head>
         <body></body>
