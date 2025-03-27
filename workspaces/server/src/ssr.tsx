@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +13,10 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
 
+interface WebpackManifest {
+  [key: string]: string;
+}
+
 function getFiles(parent: string): string[] {
   const dirents = readdirSync(parent, { withFileTypes: true });
   return dirents
@@ -26,11 +30,18 @@ function getFilePaths(relativePath: string, rootDir: string): string[] {
 }
 
 export function registerSsr(app: FastifyInstance): void {
+  const clientDistPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist');
+  const publicPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public');
+  
+  // マニフェストファイルを読み込む
+  const manifestPath = path.join(clientDistPath, 'manifest.json');
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as WebpackManifest;
+
   app.register(fastifyStatic, {
     prefix: '/public/',
     root: [
-      path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist'),
-      path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public'),
+      path.resolve(path.dirname(fileURLToPath(import.meta.url)), clientDistPath),
+      path.resolve(path.dirname(fileURLToPath(import.meta.url)), publicPath),
     ],
   });
 
@@ -66,16 +77,29 @@ export function registerSsr(app: FastifyInstance): void {
       getFilePaths('public/logos', rootDir),
     ].flat();
 
+    // JavaScriptファイルの読み込み順序を制御
+    const criticalJsFiles = [
+      manifest['runtime.js'] || '',  // ランタイムを最初に
+      manifest['main.js'] || '',     // メインバンドル
+    ].filter(Boolean);
+
+    const deferredJsFiles = Object.entries(manifest)
+      .filter(([key]) => key.startsWith('vendor.') || key.startsWith('common.'))
+      .map(([, value]) => value)
+      .filter(Boolean);
+      
     reply.type('text/html').send(/* html */ `
       <!DOCTYPE html>
       <html lang="ja">
         <head>
           <meta charSet="UTF-8" />
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-          <script src="/public/main.js"></script>
           ${imagePaths.map((imagePath) => `<link as="image" href="${imagePath}" rel="preload" />`).join('\n')}
-        </head>
-        <body></body>
+          </head>
+          <body>
+          ${criticalJsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
+          ${deferredJsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
+          </body>
       </html>
       <script>
         window.__staticRouterHydrationData = ${htmlescape({
