@@ -38,11 +38,27 @@ export function registerSsr(app: FastifyInstance): void {
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as WebpackManifest;
 
   app.register(fastifyStatic, {
+    cacheControl: true,
+    immutable: true,
+    maxAge: '1y',
     prefix: '/public/',
     root: [
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), clientDistPath),
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), publicPath),
     ],
+    setHeaders: (res, path) => {
+      // 画像ファイルに対してのみキャッシュヘッダーを設定
+      if (path.endsWith('.webp') || path.endsWith('.jpg') || path.endsWith('.jpeg') || 
+          path.endsWith('.png') || path.endsWith('.gif') || path.endsWith('.svg')) {
+        // キャッシュ制御
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        res.setHeader('Vary', 'Accept, Accept-Encoding');
+        res.setHeader('Accept-CH', 'DPR, Width, Viewport-Width');
+        // Keep-Alive の設定
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('Keep-Alive', 'timeout=3000, max=1000');
+      }
+    },
   });
 
   app.get('/favicon.ico', (_, reply) => {
@@ -94,7 +110,6 @@ export function registerSsr(app: FastifyInstance): void {
         <head>
           <meta charSet="UTF-8" />
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-          ${imagePaths.map((imagePath) => `<link as="image" href="${imagePath}" rel="preload" />`).join('\n')}
           </head>
           <body>
           ${criticalJsFiles.map(file => `<script src="${file}" defer></script>`).join('\n')}
