@@ -1,6 +1,9 @@
 import path from 'node:path';
 
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import webpack from 'webpack';
+
+const useAnalyzer = process.env.ANALYZE === 'true';
 
 /** @type {import('webpack').Configuration} */
 const config = {
@@ -58,6 +61,7 @@ const config = {
   },
   plugins: [
     new webpack.EnvironmentPlugin({ API_BASE_URL: '/api', NODE_ENV: '' }),
+    ...(useAnalyzer ? [new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' })] : []),
   ],
   resolve: {
     alias: {
