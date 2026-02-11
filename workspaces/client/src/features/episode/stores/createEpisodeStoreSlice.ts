@@ -8,7 +8,7 @@ import { episodeService } from '@wsh-2025/client/src/features/episode/services/e
 type EpisodeId = string;
 
 interface EpisodeState {
-  episodes: Record<EpisodeId, StandardSchemaV1.InferOutput<typeof schema.getEpisodeByIdResponse> | StandardSchemaV1.InferOutput<typeof schema.getEpisodesResponse>[number]>;
+  episodes: Record<EpisodeId, StandardSchemaV1.InferOutput<typeof schema.getEpisodeByIdResponse>>;
 }
 
 interface EpisodeActions {
