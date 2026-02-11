@@ -62,7 +62,7 @@
     "@unocss/preset-icons": "66.1.0-beta.5",
     "@unocss/preset-wind3": "66.1.0-beta.5",
     "@unocss/reset": "66.1.0-beta.5",
-    "@unocss/webpack": "66.1.0-beta.5",
+    "@unocss/runtime": "66.1.0-beta.5",
     "@wsh-2025/configs": "workspace:*",
     "arraybuffer-loader": "1.0.8",
     "babel-loader": "9.2.1",

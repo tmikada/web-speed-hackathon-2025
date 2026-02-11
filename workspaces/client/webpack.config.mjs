@@ -2,8 +2,6 @@ import path from 'node:path';
 
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import webpack from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import UnoCSS from '@unocss/webpack';
 
 const useAnalyzer = process.env.ANALYZE === 'true';
 
@@ -52,10 +50,6 @@ const config = {
           loader: 'arraybuffer-loader',
         },
       },
-      {
-        test: /\.css$/,
-         use: [MiniCssExtractPlugin.loader, 'css-loader'],  // style-loader → MiniCssExtractPlugin.loader
-      },
     ],
   },
   output: {
@@ -67,10 +61,6 @@ const config = {
   },
   plugins: [
     new webpack.EnvironmentPlugin({ API_BASE_URL: '/api', NODE_ENV: '' }),
-    UnoCSS(),
-    new MiniCssExtractPlugin({
-      filename: 'styles.css',
-    }),
     ...(useAnalyzer ? [new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' })] : []),
   ],
   resolve: {
