@@ -43,13 +43,6 @@ const config = {
         resourceQuery: /raw/,
         type: 'asset/source',
       },
-      {
-        resourceQuery: /arraybuffer/,
-        type: 'javascript/auto',
-        use: {
-          loader: 'arraybuffer-loader',
-        },
-      },
     ],
   },
   output: {
@@ -64,10 +57,7 @@ const config = {
     ...(useAnalyzer ? [new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' })] : []),
   ],
   resolve: {
-    alias: {
-      '@ffmpeg/core$': path.resolve(import.meta.dirname, 'node_modules', '@ffmpeg/core/dist/umd/ffmpeg-core.js'),
-      '@ffmpeg/core/wasm$': path.resolve(import.meta.dirname, 'node_modules', '@ffmpeg/core/dist/umd/ffmpeg-core.wasm'),
-    },
+    alias: {},
     extensions: ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts', '.tsx', '.jsx'],
   },
 };
