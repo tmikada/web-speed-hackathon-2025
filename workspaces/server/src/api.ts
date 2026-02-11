@@ -173,15 +173,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
           return void 0;
         },
         with: {
-          series: {
-            with: {
-              episodes: {
-                orderBy(episode, { asc }) {
-                  return asc(episode.order);
-                },
-              },
-            },
-          },
+          series: true,
         },
       });
       reply.code(200).send(episodes);
@@ -386,15 +378,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
           channel: true,
           episode: {
             with: {
-              series: {
-                with: {
-                  episodes: {
-                    orderBy(episode, { asc }) {
-                      return asc(episode.order);
-                    },
-                  },
-                },
-              },
+              series: true,
             },
           },
         },

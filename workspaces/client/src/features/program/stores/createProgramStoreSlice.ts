@@ -8,7 +8,7 @@ import { programService } from '@wsh-2025/client/src/features/program/services/p
 type ProgramId = string;
 
 interface ProgramState {
-  programs: Record<ProgramId, StandardSchemaV1.InferOutput<typeof schema.getProgramByIdResponse>>;
+  programs: Record<ProgramId, StandardSchemaV1.InferOutput<typeof schema.getProgramByIdResponse> | StandardSchemaV1.InferOutput<typeof schema.getProgramsResponse>[number]>;
 }
 
 interface ProgramActions {
