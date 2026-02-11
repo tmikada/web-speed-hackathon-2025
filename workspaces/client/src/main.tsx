@@ -1,6 +1,7 @@
 import '@wsh-2025/client/src/setups/polyfills';
 import '@wsh-2025/client/src/setups/luxon';
-import '@wsh-2025/client/src/setups/unocss';
+import 'uno.css';                              // ビルド時生成されたCSS
+import '@unocss/reset/tailwind-compat.css';    // リセットCSS（今はunocss.ts内で動的importしていた）
 
 import { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';

@@ -74,7 +74,8 @@ export function registerSsr(app: FastifyInstance): void {
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
           <script src="/public/main.js"></script>
           ${imagePaths.map((imagePath) => `<link as="image" href="${imagePath}" rel="preload" />`).join('\n')}
-        </head>
+          <link rel="stylesheet" href="/public/styles.css" />
+          </head>
         <body></body>
       </html>
       <script>
