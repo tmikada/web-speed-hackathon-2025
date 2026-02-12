@@ -3,11 +3,11 @@ import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
 import * as batshit from '@yornaath/batshit';
 
-import { schedulePlugin } from '@wsh-2025/client/src/features/requests/schedulePlugin';
+// import { schedulePlugin } from '@wsh-2025/client/src/features/requests/schedulePlugin';
 
 const $fetch = createFetch({
   baseURL: process.env['API_BASE_URL'] ?? '/api',
-  plugins: [schedulePlugin],
+  // plugins: [schedulePlugin],
   schema: createSchema({
     '/programs': {
       output: schema.getProgramsResponse,
