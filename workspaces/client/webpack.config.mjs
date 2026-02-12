@@ -47,13 +47,12 @@ const config = {
   },
   output: {
     chunkFilename: 'chunk-[contenthash].js',
-    chunkFormat: false,
     filename: 'main.js',
     path: path.resolve(import.meta.dirname, './dist'),
     publicPath: 'auto',
   },
   plugins: [
-    new webpack.EnvironmentPlugin({ API_BASE_URL: '/api', NODE_ENV: '' }),
+    new webpack.EnvironmentPlugin({ API_BASE_URL: '/api', NODE_ENV: 'production' }),
     ...(useAnalyzer ? [new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' })] : []),
   ],
   resolve: {
