@@ -79,7 +79,9 @@ export const Program = ({ height, program }: Props): ReactElement => {
           </div>
         </button>
       </Hoverable>
-      <ProgramDetailDialog isOpen={shouldProgramDetailDialogOpen} program={program} />
+      {shouldProgramDetailDialogOpen && (
+        <ProgramDetailDialog isOpen={shouldProgramDetailDialogOpen} program={program} />
+      )}
     </>
   );
 };
