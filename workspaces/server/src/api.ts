@@ -348,7 +348,58 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
           );
         },
       });
-      reply.code(200).send(programs);
+      // reply.code(200).send(programs);
+      reply.code(200).send(programs.map(({ description: _, ...rest }) => rest));
+    },
+  });
+
+  api.route({
+    method: 'GET',
+    url: '/timetable/:programId',
+    schema: {
+      tags: ['番組'],
+      params: schema.getTimetableByIdRequestParams,
+      querystring: schema.getTimetableByIdRequestQuery,
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: schema.getTimetableByIdResponse,
+            },
+          },
+        },
+      },
+    } satisfies FastifyZodOpenApiSchema,
+    handler: async function getTimetableById(req, reply) {
+      const database = getDatabase();
+
+      const target = await database.query.program.findFirst({
+        where(program, { eq }) {
+          return eq(program.id, req.params.programId);
+        },
+      });
+      if (!target) {
+        return reply.code(404).send();
+      }
+
+      const program = await database.query.program.findMany({
+        orderBy(program, { asc }) {
+          return asc(program.startAt);
+        },
+        where(program, { between, eq, and, sql }) {
+          // 競技のため、時刻のみで比較する
+          return and(
+            eq(program.channelId, target.channelId),
+            between(
+              program.startAt,
+              sql`time(${req.query.since}, '+9 hours')`,
+              sql`time(${req.query.until}, '+9 hours')`,
+            ),
+          )
+        },
+      });
+      reply.code(200).send(program.map(({ description: _, ...rest }) => rest));
+      // reply.code(200).send(program);
     },
   });
 

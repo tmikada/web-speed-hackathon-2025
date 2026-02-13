@@ -5,16 +5,19 @@ import { Link } from 'react-router';
 import { ArrayValues } from 'type-fest';
 
 import { Dialog } from '@wsh-2025/client/src/features/dialog/components/Dialog';
-import { useEpisode } from '@wsh-2025/client/src/pages/timetable/hooks/useEpisode';
+// import { useEpisode } from '@wsh-2025/client/src/pages/timetable/hooks/useEpisode';
+import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
 import { useSelectedProgramId } from '@wsh-2025/client/src/pages/timetable/hooks/useSelectedProgramId';
 
 interface Props {
   isOpen: boolean;
-  program: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getTimetableResponse>>;
+  program: StandardSchemaV1.InferOutput<typeof schema.getProgramByIdResponse>;
 }
 
 export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement => {
-  const episode = useEpisode(program.episodeId);
+  // const episode = useEpisode(program.episodeId);
+  const fullProgram = useProgramById({ programId: program.id });
+  const episode = fullProgram?.episode ?? null;
   const [, setProgram] = useSelectedProgramId();
 
   const onClose = () => {

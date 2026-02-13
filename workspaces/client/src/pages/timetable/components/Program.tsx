@@ -9,7 +9,9 @@ import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hover
 import { ProgramDetailDialog } from '@wsh-2025/client/src/pages/timetable/components/ProgramDetailDialog';
 import { useColumnWidth } from '@wsh-2025/client/src/pages/timetable/hooks/useColumnWidth';
 import { useCurrentUnixtimeMs } from '@wsh-2025/client/src/pages/timetable/hooks/useCurrentUnixtimeMs';
+import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
 import { useSelectedProgramId } from '@wsh-2025/client/src/pages/timetable/hooks/useSelectedProgramId';
+import { useStore } from '@wsh-2025/client/src/app/StoreContext';
 
 interface Props {
   height: number;
@@ -17,11 +19,17 @@ interface Props {
 }
 
 export const Program = ({ height, program }: Props): ReactElement => {
+// export const Program = ({ height, programId }: Props): ReactElement => {
+
   const width = useColumnWidth(program.channelId);
 
   const [selectedProgramId, setProgram] = useSelectedProgramId();
   const shouldProgramDetailDialogOpen = program.id === selectedProgramId;
-  const onClick = () => {
+  const state = useStore((s) => s);
+  // fetchProgramById の結果はストアに入るので、useProgramById で取得
+  const fullProgram = useProgramById({ programId: program.id });
+  const onClick = async () => {
+    await state.features.program.fetchProgramById({ programId: program.id });
     setProgram(program);
   };
 
@@ -33,6 +41,24 @@ export const Program = ({ height, program }: Props): ReactElement => {
 
   const titleRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLButtonElement | null>(null);
+
+  const [isInView, setIsInView] = useState(false);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const [shouldImageBeVisible, setShouldImageBeVisible] = useState<boolean>(false);
   useEffect(() => {
@@ -50,6 +76,7 @@ export const Program = ({ height, program }: Props): ReactElement => {
     <>
       <Hoverable classNames={{ hovered: isArchived ? 'brightness-200' : 'brightness-125' }}>
         <button
+          ref={containerRef}
           className={`h-[${height}px] w-auto border-[1px] border-solid border-[#000000] bg-[${isBroadcasting ? '#FCF6E5' : '#212121'}] px-[12px] py-[8px] text-left opacity-${isArchived ? 50 : 100}`}
           style={{ width }}
           type="button"
@@ -73,14 +100,14 @@ export const Program = ({ height, program }: Props): ReactElement => {
                 ref={imageRef}
                 alt=""
                 className="pointer-events-none w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-                src={program.thumbnailUrl}
+                src={isInView ? program.thumbnailUrl : undefined}
               />
             </div>
           </div>
         </button>
       </Hoverable>
-      {shouldProgramDetailDialogOpen && (
-        <ProgramDetailDialog isOpen={shouldProgramDetailDialogOpen} program={program} />
+      {shouldProgramDetailDialogOpen && fullProgram && (
+        <ProgramDetailDialog isOpen={shouldProgramDetailDialogOpen} program={fullProgram} />
       )}
     </>
   );

@@ -39,7 +39,7 @@ const batcher = batshit.create({
   },
   scheduler: batshit.windowedFiniteBatchScheduler({
     maxBatchSize: 100,
-    windowMs: 1000,
+    windowMs: 10,
   }),
 });
 
@@ -54,6 +54,8 @@ export const programService: ProgramService = {
   async fetchProgramById({ programId }) {
     const channel = await batcher.fetch({ programId });
     return channel;
+    // const channel = await $fetch('/programs/:episodeId', { params: {programId} });
+    // return channel;
   },
   async fetchPrograms() {
     const data = await $fetch('/programs', { query: {} });

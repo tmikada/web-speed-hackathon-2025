@@ -13,7 +13,7 @@ import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useP
 import { RecommendedSection } from '@wsh-2025/client/src/features/recommended/components/RecommendedSection';
 import { useRecommended } from '@wsh-2025/client/src/features/recommended/hooks/useRecommended';
 import { SeriesEpisodeList } from '@wsh-2025/client/src/features/series/components/SeriesEpisodeList';
-import { useTimetable } from '@wsh-2025/client/src/features/timetable/hooks/useTimetable';
+import { useTimetableById } from '@wsh-2025/client/src/features/timetable/hooks/useTimetableById';
 import { PlayerController } from '@wsh-2025/client/src/pages/program/components/PlayerController';
 import { usePlayerRef } from '@wsh-2025/client/src/pages/program/hooks/usePlayerRef';
 
@@ -27,7 +27,7 @@ export const prefetch = async (store: ReturnType<typeof createStore>, { programI
   const [program, channels, timetable, modules] = await Promise.all([
     store.getState().features.program.fetchProgramById({ programId }),
     store.getState().features.channel.fetchChannels(),
-    store.getState().features.timetable.fetchTimetable({ since, until }),
+    store.getState().features.timetable.fetchTimetableById({ since, until, programId }),
     store
     .getState()
     .features.recommended.fetchRecommendedModulesByReferenceId({ referenceId: programId }),
@@ -42,7 +42,7 @@ export const ProgramPage = () => {
   const program = useProgramById({ programId });
   invariant(program);
 
-  const timetable = useTimetable();
+  const timetable = useTimetableById();
   const nextProgram = timetable[program.channel.id]?.find((p) => {
     return DateTime.fromISO(program.endAt).equals(DateTime.fromISO(p.startAt));
   });

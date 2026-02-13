@@ -144,7 +144,18 @@ export const getTimetableRequestQuery = z.object({
   since: z.coerce.string().openapi({ format: 'date-time' }),
   until: z.coerce.string().openapi({ format: 'date-time' }),
 });
-export const getTimetableResponse = z.array(program.extend({}));
+// export const getTimetableResponse = z.array(program.extend({}));
+export const getTimetableResponse = z.array(program.omit({ description: true }));
+
+// GET /timetable/:programId
+export const getTimetableByIdRequestParams = z.object({
+  programId: z.string(),
+});
+export const getTimetableByIdRequestQuery = z.object({
+  since: z.coerce.string().openapi({ format: 'date-time' }),
+  until: z.coerce.string().openapi({ format: 'date-time' }),
+});
+export const getTimetableByIdResponse = z.array(program.omit({ description: true }));
 
 // GET /programs
 export const getProgramsRequestQuery = z.object({

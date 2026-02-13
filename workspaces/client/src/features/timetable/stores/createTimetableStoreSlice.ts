@@ -13,6 +13,11 @@ interface TimetableState {
 }
 
 interface TimetableActions {
+  fetchTimetableById: (params: {
+    since: string;
+    until: string;
+    programId: ProgramId;
+  }) => Promise<StandardSchemaV1.InferOutput<typeof schema.getTimetableByIdResponse>>;
   fetchTimetable: (params: {
     since: string;
     until: string;
@@ -21,6 +26,17 @@ interface TimetableActions {
 
 export const createTimetableStoreSlice = () => {
   return lens<TimetableState & TimetableActions>((set) => ({
+    fetchTimetableById: async ({ since, until, programId }) => {
+      const programs = await timetableService.fetchTimetableById({ since, until, programId });
+      set((state) => {
+        return produce(state, (draft) => {
+          for (const program of programs) {
+            draft.programs[program.id] = program;
+          }
+        });
+      });
+      return programs;
+    },
     fetchTimetable: async ({ since, until }) => {
       const programs = await timetableService.fetchTimetable({ since, until });
       set((state) => {
