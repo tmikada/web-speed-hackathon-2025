@@ -10,23 +10,16 @@ export function useScrollSnap({ scrollPadding }: { scrollPadding: number }) {
       return;
     }
 
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     const handleScroll = () => {
-      if (isScrolling.current) {
-        return;
-      }
       isScrolling.current = true;
     };
 
     const handleScrollend = () => {
-      if (!isScrolling.current) {
-        return;
-      }
       isScrolling.current = false;
-    };
 
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let interval = setInterval(() => {
-      if (!containerRef.current) {
+      if (isSnapping.current || !containerRef.current) {
         return;
       }
 
@@ -39,14 +32,6 @@ export function useScrollSnap({ scrollPadding }: { scrollPadding: number }) {
           : prev;
       }, 0);
 
-      if (isScrolling.current) {
-        return;
-      }
-
-      if (isSnapping.current) {
-        return;
-      }
-
       isSnapping.current = true;
       containerRef.current.scrollTo({
         behavior: 'smooth',
@@ -56,7 +41,7 @@ export function useScrollSnap({ scrollPadding }: { scrollPadding: number }) {
       timer = setTimeout(() => {
         isSnapping.current = false;
       }, 1000);
-    });
+    };
 
     containerRef.current.addEventListener('scroll', handleScroll);
     containerRef.current.addEventListener('scrollend', handleScrollend);
@@ -64,7 +49,6 @@ export function useScrollSnap({ scrollPadding }: { scrollPadding: number }) {
     return () => {
       containerRef.current?.removeEventListener('scroll', handleScroll);
       containerRef.current?.removeEventListener('scrollend', handleScrollend);
-      clearInterval(interval);
       if (timer) {
         clearTimeout(timer);
       }
