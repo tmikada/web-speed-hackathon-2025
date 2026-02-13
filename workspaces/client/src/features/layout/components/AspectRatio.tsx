@@ -1,5 +1,4 @@
-import { ReactNode, useEffect, useRef } from 'react';
-import { useUpdate } from 'react-use';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -8,19 +7,23 @@ interface Props {
 }
 
 export const AspectRatio = ({ children, ratioHeight, ratioWidth }: Props) => {
-  const forceUpdate = useUpdate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(function tick() {
-      forceUpdate();
-    }, 1000);
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) {
+        setWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(el);
     return () => {
-      clearInterval(interval);
+      observer.disconnect();
     };
   }, []);
 
-  const width = containerRef.current?.getBoundingClientRect().width ?? 0;
   const height = (width * ratioHeight) / ratioWidth;
 
   return (
