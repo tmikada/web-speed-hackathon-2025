@@ -73,6 +73,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
     handler: async function initialize(_req, reply) {
       await initializeDatabase();
       reply.code(200).send({});
+      return reply;
     },
   });
 
@@ -108,6 +109,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         },
       });
       reply.code(200).send(channels);
+      return reply;
     },
   });
 
@@ -139,6 +141,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         return reply.code(404).send();
       }
       reply.code(200).send(channel);
+      return reply;
     },
   });
 
@@ -185,6 +188,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         },
       });
       reply.code(200).send(episodes);
+      return reply;
     },
   });
 
@@ -227,6 +231,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         return reply.code(404).send();
       }
       reply.code(200).send(episode);
+      return reply;
     },
   });
 
@@ -272,6 +277,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         },
       });
       reply.code(200).send(series);
+      return reply;
     },
   });
 
@@ -313,6 +319,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         return reply.code(404).send();
       }
       reply.code(200).send(series);
+      return reply;
     },
   });
 
@@ -350,6 +357,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
       });
       // reply.code(200).send(programs);
       reply.code(200).send(programs.map(({ description: _, ...rest }) => rest));
+      return reply;
     },
   });
 
@@ -400,6 +408,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
       });
       reply.code(200).send(program.map(({ description: _, ...rest }) => rest));
       // reply.code(200).send(program);
+      return reply;
     },
   });
 
@@ -451,6 +460,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         },
       });
       reply.code(200).send(programs);
+      return reply;
     },
   });
 
@@ -498,6 +508,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         return reply.code(404).send();
       }
       reply.code(200).send(program);
+      return reply;
     },
   });
 
@@ -544,6 +555,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         },
       });
       reply.code(200).send(modules);
+      return reply;
     },
   });
 
@@ -579,6 +591,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
 
       req.session.set('id', ret.id.toString());
       reply.code(200).send(user);
+      return reply;
     },
   });
 
@@ -627,6 +640,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
 
       req.session.set('id', ret.id.toString());
       reply.code(200).send(ret);
+      return reply;
     },
   });
 
@@ -662,6 +676,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
         return reply.code(401).send();
       }
       reply.code(200).send(user);
+      return reply;
     },
   });
 
@@ -678,6 +693,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
       }
       req.session.set('id', void 0);
       reply.code(200).send();
+      return reply;
     },
   });
 

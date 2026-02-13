@@ -22,7 +22,7 @@ export function registerSsr(app: FastifyInstance): void {
   });
 
   app.get('/favicon.ico', (_, reply) => {
-    reply.status(404).send();
+    return reply.status(404).send();
   });
 
   app.get('/*', async (req, reply) => {
@@ -64,5 +64,7 @@ export function registerSsr(app: FastifyInstance): void {
         })};
       </script>
     `);
+
+    return reply;
   });
 }
