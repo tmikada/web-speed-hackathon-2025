@@ -5,7 +5,7 @@ import { useRecommended } from '@wsh-2025/client/src/features/recommended/hooks/
 export const prefetch = async (store: ReturnType<typeof createStore>) => {
   const modules = await store
     .getState()
-    .features.recommended.fetchRecommendedModulesByReferenceId({ referenceId: 'error' });
+    .features.recommended.fetchRecommendedModulesByReferenceId({ referenceId: 'error', limit: 1 });
   return { modules };
 };
 

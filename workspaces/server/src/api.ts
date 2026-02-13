@@ -531,7 +531,10 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
     handler: async function getRecommendedModules(req, reply) {
       const database = getDatabase();
 
+      const limit = Number((req.query as Record<string, string>)?.['limit']) || undefined;
+
       const modules = await database.query.recommendedModule.findMany({
+        limit,
         orderBy(module, { asc }) {
           return asc(module.order);
         },

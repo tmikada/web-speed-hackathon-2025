@@ -23,7 +23,7 @@ export const prefetch = async (store: ReturnType<typeof createStore>, { episodeI
     store.getState().features.episode.fetchEpisodeById({ episodeId }),
     store
     .getState()
-    .features.recommended.fetchRecommendedModulesByReferenceId({ referenceId: episodeId }),
+    .features.recommended.fetchRecommendedModulesByReferenceId({ referenceId: episodeId, limit: 1 }),
   ]);
   return { episode, modules };
 };

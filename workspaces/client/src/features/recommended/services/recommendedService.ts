@@ -18,13 +18,15 @@ const $fetch = createFetch({
 interface RecommendedService {
   fetchRecommendedModulesByReferenceId: (params: {
     referenceId: string;
+    limit?: number;
   }) => Promise<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
 }
 
 export const recommendedService: RecommendedService = {
-  async fetchRecommendedModulesByReferenceId({ referenceId }) {
+  async fetchRecommendedModulesByReferenceId({ referenceId, limit }) {
     const data = await $fetch('/recommended/:referenceId', {
       params: { referenceId },
+      query: limit != null ? { limit: String(limit) } : undefined,
     });
     return data;
   },
