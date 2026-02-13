@@ -1,5 +1,7 @@
 import path from 'node:path';
 
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import UnoCSS from '@unocss/webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import webpack from 'webpack';
 
@@ -43,6 +45,10 @@ const config = {
         resourceQuery: /raw/,
         type: 'asset/source',
       },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
     ],
   },
   output: {
@@ -52,6 +58,8 @@ const config = {
     publicPath: 'auto',
   },
   plugins: [
+    UnoCSS(),
+    new MiniCssExtractPlugin({ filename: 'main.css' }),
     new webpack.EnvironmentPlugin({ API_BASE_URL: '/api', NODE_ENV: 'production' }),
     ...(useAnalyzer ? [new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' })] : []),
   ],
