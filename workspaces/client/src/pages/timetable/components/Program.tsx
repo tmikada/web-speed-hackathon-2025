@@ -21,7 +21,7 @@ interface Props {
   program: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getTimetableResponse>>;
 }
 
-const ProgramContent = ({ height, program }: Props): ReactElement => {
+export const Program = ({ height, program }: Props): ReactElement => {
   const width = useColumnWidth(program.channelId);
 
   const [selectedProgramId, setProgram] = useSelectedProgramId();
@@ -42,6 +42,24 @@ const ProgramContent = ({ height, program }: Props): ReactElement => {
 
   const titleRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLButtonElement | null>(null);
+
+  const [isInView, setIsInView] = useState(false);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    observe(el, (entry) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        unobserve(el);
+      }
+    });
+
+    return () => {
+      unobserve(el);
+    };
+  }, []);
 
   const [shouldImageBeVisible, setShouldImageBeVisible] = useState<boolean>(false);
   useEffect(() => {
@@ -70,6 +88,7 @@ const ProgramContent = ({ height, program }: Props): ReactElement => {
     <>
       <Hoverable classNames={{ hovered: isArchived ? 'brightness-200' : 'brightness-125' }}>
         <button
+          ref={containerRef}
           className={`w-auto border-[1px] border-solid border-[#000000] bg-[${isBroadcasting ? '#FCF6E5' : '#212121'}] px-[12px] py-[8px] text-left opacity-${isArchived ? 50 : 100}`}
           style={{ width, height: `${height}px` }}
           type="button"
@@ -93,7 +112,7 @@ const ProgramContent = ({ height, program }: Props): ReactElement => {
                 ref={imageRef}
                 alt=""
                 className="pointer-events-none w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-                src={program.thumbnailUrl}
+                src={isInView ? `${program.thumbnailUrl}` : undefined}
                 srcSet={`
                   ${resizedImageUrl(program.thumbnailUrl, 320)} 320w
                 `}
@@ -107,38 +126,4 @@ const ProgramContent = ({ height, program }: Props): ReactElement => {
       )}
     </>
   );
-};
-
-export const Program = ({ height, program }: Props): ReactElement => {
-  const width = useColumnWidth(program.channelId);
-  const placeholderRef = useRef<HTMLDivElement | null>(null);
-  const [isInView, setIsInView] = useState(false);
-
-  useEffect(() => {
-    const el = placeholderRef.current;
-    if (!el) return;
-
-    observe(el, (entry) => {
-      if (entry.isIntersecting) {
-        setIsInView(true);
-        unobserve(el);
-      }
-    });
-
-    return () => {
-      unobserve(el);
-    };
-  }, []);
-
-  if (!isInView) {
-    return (
-      <div
-        ref={placeholderRef}
-        className="border-[1px] border-solid border-[#000000] bg-[#212121]"
-        style={{ width, height: `${height}px` }}
-      />
-    );
-  }
-
-  return <ProgramContent height={height} program={program} />;
 };

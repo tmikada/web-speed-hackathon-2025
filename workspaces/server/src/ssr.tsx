@@ -53,8 +53,7 @@ export function registerSsr(app: FastifyInstance): void {
         <head>
           <meta charSet="UTF-8" />
           <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-          <link rel="preload" href="/public/main.css" as="style" />
-          <link rel="stylesheet" href="/public/main.css" media="print" onload="this.media='all'" />
+          <link rel="stylesheet" href="/public/main.css" />
           <script defer src="/public/main.js"></script>
           </head>
         <body></body>
