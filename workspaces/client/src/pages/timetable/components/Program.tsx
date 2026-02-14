@@ -1,10 +1,10 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
-import { DateTime } from 'luxon';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import Ellipsis from 'react-ellipsis-component';
 import { ArrayValues } from 'type-fest';
 
+import { formatDateTimeJST } from '@wsh-2025/client/src/utils/datetime';
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
 import { ProgramDetailDialog } from '@wsh-2025/client/src/pages/timetable/components/ProgramDetailDialog';
 import { resizedImageUrl } from '@wsh-2025/client/src/utils/image';
@@ -35,10 +35,10 @@ export const Program = ({ height, program }: Props): ReactElement => {
   };
 
   const currentUnixtimeMs = useCurrentUnixtimeMs();
-  const isBroadcasting =
-    DateTime.fromISO(program.startAt).toMillis() <= DateTime.fromMillis(currentUnixtimeMs).toMillis() &&
-    DateTime.fromMillis(currentUnixtimeMs).toMillis() < DateTime.fromISO(program.endAt).toMillis();
-  const isArchived = DateTime.fromISO(program.endAt).toMillis() <= DateTime.fromMillis(currentUnixtimeMs).toMillis();
+  const startMs = new Date(program.startAt).getTime();
+  const endMs = new Date(program.endAt).getTime();
+  const isBroadcasting = startMs <= currentUnixtimeMs && currentUnixtimeMs < endMs;
+  const isArchived = endMs <= currentUnixtimeMs;
 
   const titleRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -99,7 +99,7 @@ export const Program = ({ height, program }: Props): ReactElement => {
               <span
                 className={`mr-[8px] shrink-0 grow-0 text-[14px] font-bold text-[${isBroadcasting ? '#767676' : '#999999'}]`}
               >
-                {DateTime.fromISO(program.startAt).toFormat('mm')}
+                {formatDateTimeJST(program.startAt, 'mm')}
               </span>
               <div
                 className={`grow-1 shrink-1 overflow-hidden text-[14px] font-bold text-[${isBroadcasting ? '#212121' : '#ffffff'}]`}

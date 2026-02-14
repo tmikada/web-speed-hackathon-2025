@@ -1,9 +1,9 @@
 import * as Slider from '@radix-ui/react-slider';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
-import { Duration } from 'luxon';
 import invariant from 'tiny-invariant';
 
+import { formatDuration } from '@wsh-2025/client/src/utils/datetime';
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
 import { SeekThumbnail } from '@wsh-2025/client/src/pages/episode/components/SeekThumbnail';
 import { useCurrentTime } from '@wsh-2025/client/src/pages/episode/hooks/useCurrentTime';
@@ -68,9 +68,9 @@ export const PlayerController = ({ episode }: Props) => {
               </Hoverable>
 
               <span className="ml-[4px] block shrink-0 grow-0 text-[12px] font-bold text-[#FFFFFF]">
-                {Duration.fromObject({ seconds: currentTime }).toFormat('mm:ss')}
+                {formatDuration(currentTime)}
                 {' / '}
-                {Duration.fromObject({ seconds: duration }).toFormat('mm:ss')}
+                {formatDuration(duration)}
               </span>
             </div>
           </div>

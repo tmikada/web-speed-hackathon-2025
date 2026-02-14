@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import Ellipsis from 'react-ellipsis-component';
 import { Flipped } from 'react-flip-toolkit';
@@ -11,6 +10,7 @@ import { PlayerType } from '@wsh-2025/client/src/features/player/constants/playe
 import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
 import { RecommendedSection } from '@wsh-2025/client/src/features/recommended/components/RecommendedSection';
 import { useRecommended } from '@wsh-2025/client/src/features/recommended/hooks/useRecommended';
+import { endOfDayJST, formatDateTimeJST, startOfDayJST } from '@wsh-2025/client/src/utils/datetime';
 import { SeriesEpisodeList } from '@wsh-2025/client/src/features/series/components/SeriesEpisodeList';
 import { useTimetableById } from '@wsh-2025/client/src/features/timetable/hooks/useTimetableById';
 import { PlayerController } from '@wsh-2025/client/src/pages/program/components/PlayerController';
@@ -20,9 +20,8 @@ import { usePlayerRef } from '@wsh-2025/client/src/pages/program/hooks/usePlayer
 export const prefetch = async (store: ReturnType<typeof createStore>, { programId }: Params) => {
   invariant(programId);
 
-  const now = DateTime.now();
-  const since = now.startOf('day').toISO();
-  const until = now.endOf('day').toISO();
+  const since = startOfDayJST().toISOString();
+  const until = endOfDayJST().toISOString();
 
   const [program, channels, timetable, modules] = await Promise.all([
     store.getState().features.program.fetchProgramById({ programId }),
@@ -44,7 +43,7 @@ export const ProgramPage = () => {
 
   const timetable = useTimetableById();
   const nextProgram = timetable[program.channel.id]?.find((p) => {
-    return DateTime.fromISO(program.endAt).equals(DateTime.fromISO(p.startAt));
+    return new Date(program.endAt).getTime() === new Date(p.startAt).getTime();
   });
 
   const modules = useRecommended({ referenceId: programId });
@@ -52,8 +51,8 @@ export const ProgramPage = () => {
   const playerRef = usePlayerRef();
 
   const navigate = useNavigate();
-  const [isArchived, setIsArchived] = useState(() => DateTime.fromISO(program.endAt) <= DateTime.now());
-  const [isBroadcastStarted, setIsBroadcastStarted] = useState(() => DateTime.fromISO(program.startAt) <= DateTime.now());
+  const [isArchived, setIsArchived] = useState(() => new Date(program.endAt).getTime() <= Date.now());
+  const [isBroadcastStarted, setIsBroadcastStarted] = useState(() => new Date(program.startAt).getTime() <= Date.now());
   useEffect(() => {
     if (isArchived) {
       return;
@@ -61,7 +60,7 @@ export const ProgramPage = () => {
 
     // 放送前であれば、放送開始時刻に1回だけ更新する
     if (!isBroadcastStarted) {
-      const msUntilStart = DateTime.fromISO(program.startAt).diff(DateTime.now()).milliseconds;
+      const msUntilStart = new Date(program.startAt).getTime() - Date.now();
       const timeout = setTimeout(() => {
         setIsBroadcastStarted(true);
       }, Math.max(0, msUntilStart));
@@ -71,7 +70,7 @@ export const ProgramPage = () => {
     }
 
     // 放送中に次の番組が始まったら、画面をそのままにしつつ、情報を次の番組にする
-    const msUntilEnd = DateTime.fromISO(program.endAt).diff(DateTime.now()).milliseconds;
+    const msUntilEnd = new Date(program.endAt).getTime() - Date.now();
     const timeout = setTimeout(() => {
       if (nextProgram?.id) {
         void navigate(`/programs/${nextProgram.id}`, {
@@ -137,7 +136,7 @@ export const ProgramPage = () => {
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#00000077] p-[24px]">
                   <p className="mb-[32px] text-[24px] font-bold text-[#ffffff]">
-                    この番組は {DateTime.fromISO(program.startAt).toFormat('L月d日 H:mm')} に放送予定です
+                    この番組は {formatDateTimeJST(program.startAt, 'L月d日 H:mm')} に放送予定です
                   </p>
                 </div>
               </div>
@@ -153,9 +152,9 @@ export const ProgramPage = () => {
             <Ellipsis ellipsis reflowOnResize maxLine={2} text={program.title} visibleLine={2} />
           </h1>
           <div className="mt-[8px] text-[16px] text-[#999999]">
-            {DateTime.fromISO(program.startAt).toFormat('L月d日 H:mm')}
+            {formatDateTimeJST(program.startAt, 'L月d日 H:mm')}
             {' 〜 '}
-            {DateTime.fromISO(program.endAt).toFormat('L月d日 H:mm')}
+            {formatDateTimeJST(program.endAt, 'L月d日 H:mm')}
           </div>
           <div className="mt-[16px] text-[16px] text-[#999999]">
             <Ellipsis ellipsis reflowOnResize maxLine={3} text={program.description} visibleLine={3} />

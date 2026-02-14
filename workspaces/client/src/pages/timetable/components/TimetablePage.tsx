@@ -1,10 +1,10 @@
-import { DateTime } from 'luxon';
 import { useEffect } from 'react';
 import invariant from 'tiny-invariant';
 
 import { createStore } from '@wsh-2025/client/src/app/createStore';
 import { useStore } from '@wsh-2025/client/src/app/StoreContext';
 import { useTimetable } from '@wsh-2025/client/src/features/timetable/hooks/useTimetable';
+import { endOfDayJST, startOfDayJST } from '@wsh-2025/client/src/utils/datetime';
 import { ChannelTitle } from '@wsh-2025/client/src/pages/timetable/components/ChannelTitle';
 import { NewTimetableFeatureDialog } from '@wsh-2025/client/src/pages/timetable/components/NewTimetableFeatureDialog';
 import { ProgramList } from '@wsh-2025/client/src/pages/timetable/components/ProgramList';
@@ -12,9 +12,8 @@ import { TimelineYAxis } from '@wsh-2025/client/src/pages/timetable/components/T
 import { useShownNewFeatureDialog } from '@wsh-2025/client/src/pages/timetable/hooks/useShownNewFeatureDialog';
 
 export const prefetch = async (store: ReturnType<typeof createStore>) => {
-  const now = DateTime.now();
-  const since = now.startOf('day').toISO();
-  const until = now.endOf('day').toISO();
+  const since = startOfDayJST().toISOString();
+  const until = endOfDayJST().toISOString();
 
   const [channels, programs] = await Promise.all([
     store.getState().features.channel.fetchChannels(),
