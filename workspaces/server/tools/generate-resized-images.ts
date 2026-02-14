@@ -7,7 +7,7 @@ import sharp from 'sharp';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMAGE_DIR = path.resolve(__dirname, '../../../public/images');
 const CACHE_DIR = path.resolve(__dirname, '../../../public/images-resized');
-const WIDTHS = [320, 480, 640];
+const WIDTHS = [320, 480, 640, 1280];
 
 async function generate() {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
