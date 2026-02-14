@@ -5,6 +5,7 @@
     "database:migrate": "wireit",
     "database:reset": "wireit",
     "format": "wireit",
+    "generate-images": "wireit",
     "format:eslint": "wireit",
     "format:prettier": "wireit",
     "heroku-start": "wireit",
@@ -35,6 +36,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "7.0.2",
+    "sharp": "0.34.5",
     "tsx": "4.19.2",
     "typescript": "5.7.2",
     "wireit": "0.14.9",
@@ -64,6 +66,14 @@
     "database:reset": {
       "command": "tsx ./tools/seed.ts"
     },
+    "generate-images": {
+      "command": "tsx ./tools/generate-resized-images.ts",
+      "files": [
+        "../../public/images/*.webp",
+        "./tools/generate-resized-images.ts"
+      ],
+      "output": []
+    },
     "start": {
       "command": "tsx -r ./loaders/png.cjs ./src/index.ts",
       "service": true,
@@ -83,6 +93,7 @@
         "./src/**/*"
       ],
       "dependencies": [
+        "generate-images",
         "../client:build"
       ]
     },

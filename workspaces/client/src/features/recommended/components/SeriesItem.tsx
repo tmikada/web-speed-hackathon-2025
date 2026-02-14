@@ -3,6 +3,7 @@ import { Flipped } from 'react-flip-toolkit';
 import { NavLink } from 'react-router';
 
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
+import { resizedImageUrl } from '@wsh-2025/client/src/utils/image';
 
 interface Props {
   series: {
@@ -21,7 +22,12 @@ export const SeriesItem = ({ series }: Props) => {
             <>
               <div className="relative overflow-hidden rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]">
                 <Flipped stagger flipId={isTransitioning ? `series-${series.id}` : 0}>
-                  <img alt="" className="aspect-video h-auto w-full" src={series.thumbnailUrl} loading="lazy" />
+                  <img alt="" className="aspect-video h-auto w-full" 
+                  src={`${series.thumbnailUrl}`} 
+                  srcSet={`
+                    ${resizedImageUrl(series.thumbnailUrl, 320)} 320w
+                  `}
+                  loading="lazy" />
                 </Flipped>
               </div>
               <div className="p-[8px]">

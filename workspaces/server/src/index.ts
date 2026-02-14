@@ -6,6 +6,7 @@ import fastify from 'fastify';
 
 import { registerApi } from '@wsh-2025/server/src/api';
 import { initializeDatabase } from '@wsh-2025/server/src/drizzle/database';
+import { registerImageHandler } from '@wsh-2025/server/src/image';
 import { registerSsr } from '@wsh-2025/server/src/ssr';
 import { registerStreams } from '@wsh-2025/server/src/streams';
 
@@ -35,6 +36,7 @@ async function main() {
   });
   app.register(registerApi, { prefix: '/api' });
   app.register(registerStreams);
+  registerImageHandler(app);
   app.register(registerSsr);
 
   await app.ready();

@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 import { Link } from 'react-router';
 
 import { Dialog } from '@wsh-2025/client/src/features/dialog/components/Dialog';
-// import { useEpisode } from '@wsh-2025/client/src/pages/timetable/hooks/useEpisode';
+import { resizedImageUrl } from '@wsh-2025/client/src/utils/image';
 import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
 import { useSelectedProgramId } from '@wsh-2025/client/src/pages/timetable/hooks/useSelectedProgramId';
 
@@ -35,7 +35,10 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
         <img
           alt=""
           className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-          src={program.thumbnailUrl}
+          src={`${program.thumbnailUrl}`}
+          srcSet={`
+            ${resizedImageUrl(program.thumbnailUrl, 320)} 320w
+          `}
         />
 
         {episode != null ? (
@@ -49,7 +52,10 @@ export const ProgramDetailDialog = ({ isOpen, program }: Props): ReactElement =>
             <img
               alt=""
               className="mb-[24px] w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-              src={episode.thumbnailUrl}
+              src={`${episode.thumbnailUrl}`}
+              srcSet={`
+                ${resizedImageUrl(episode.thumbnailUrl, 320)} 320w
+              `}
             />
           </>
         ) : null}

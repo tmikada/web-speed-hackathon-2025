@@ -7,6 +7,7 @@ import { ArrayValues } from 'type-fest';
 
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
 import { ProgramDetailDialog } from '@wsh-2025/client/src/pages/timetable/components/ProgramDetailDialog';
+import { resizedImageUrl } from '@wsh-2025/client/src/utils/image';
 import { useColumnWidth } from '@wsh-2025/client/src/pages/timetable/hooks/useColumnWidth';
 import { useCurrentUnixtimeMs } from '@wsh-2025/client/src/pages/timetable/hooks/useCurrentUnixtimeMs';
 import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
@@ -108,7 +109,10 @@ export const Program = ({ height, program }: Props): ReactElement => {
                 ref={imageRef}
                 alt=""
                 className="pointer-events-none w-full rounded-[8px] border-[2px] border-solid border-[#FFFFFF1F]"
-                src={isInView ? program.thumbnailUrl : undefined}
+                src={isInView ? `${program.thumbnailUrl}` : undefined}
+                srcSet={`
+                  ${resizedImageUrl(program.thumbnailUrl, 320)} 320w
+                `}
               />
             </div>
           </div>
