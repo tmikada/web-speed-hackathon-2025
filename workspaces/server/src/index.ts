@@ -21,11 +21,11 @@ async function main() {
   });  
 
   app.addHook('onSend', async (_req, reply, payload) => {
-    if (_req.url.match(/\/streams\/.*\.ts$/)) {
+    if (_req.url.match(/\/streams\/.*\.ts$/) || _req.url.startsWith('/public/')) {
       reply.header('cache-control', 'public, max-age=31536000, immutable');
     }
     else {
-      reply.header('cache-control', 'no-store');
+      reply.header('cache-control', 'no-cache');
     }
     return payload;
   });
