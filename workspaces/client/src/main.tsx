@@ -1,4 +1,3 @@
-import '@wsh-2025/client/src/setups/polyfills';
 import 'uno.css';
 
 import { StrictMode } from 'react';
