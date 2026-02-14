@@ -1,7 +1,9 @@
 import { DateTime } from 'luxon';
+import { useEffect } from 'react';
 import invariant from 'tiny-invariant';
 
 import { createStore } from '@wsh-2025/client/src/app/createStore';
+import { useStore } from '@wsh-2025/client/src/app/StoreContext';
 import { useTimetable } from '@wsh-2025/client/src/features/timetable/hooks/useTimetable';
 import { ChannelTitle } from '@wsh-2025/client/src/pages/timetable/components/ChannelTitle';
 import { NewTimetableFeatureDialog } from '@wsh-2025/client/src/pages/timetable/components/NewTimetableFeatureDialog';
@@ -24,6 +26,14 @@ export const prefetch = async (store: ReturnType<typeof createStore>) => {
 export const TimetablePage = () => {
   const record = useTimetable();
   const shownNewFeatureDialog = useShownNewFeatureDialog();
+  const state = useStore((s) => s);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      state.pages.timetable.refreshCurrentUnixtimeMs();
+    }, 250);
+    return () => clearInterval(interval);
+  }, []);
 
   const channelIds = Object.keys(record);
   const programLists = Object.values(record);
