@@ -54,15 +54,27 @@ export const createEpisodePageStoreSlice = () => {
           { signal: abortController.signal },
         );
 
-        const interval = setInterval(function tick() {
-          set(() => ({
-            currentTime: player.currentTime,
-            duration: player.duration,
-          }));
-        }, 250);
-        abortController.signal.addEventListener('abort', () => {
-          clearInterval(interval);
-        });
+        player.videoElement.addEventListener(
+          'timeupdate',
+          () => {
+            set({ currentTime: player.currentTime });
+          },
+          { signal: abortController.signal },
+        );
+        player.videoElement.addEventListener(
+          'loadedmetadata',
+          () => {
+            set({ duration: player.duration });
+          },
+          { signal: abortController.signal },
+        );
+        player.videoElement.addEventListener(
+          'durationchange',
+          () => {
+            set({ duration: player.duration });
+          },
+          { signal: abortController.signal },
+        );
 
         set(() => ({
           abortController,
