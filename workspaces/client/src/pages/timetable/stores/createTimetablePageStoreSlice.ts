@@ -2,7 +2,6 @@ import { lens } from '@dhmk/zustand-lens';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
 import { produce } from 'immer';
-import debounce from 'lodash/debounce';
 import { ArrayValues } from 'type-fest';
 
 import { DEFAULT_WIDTH } from '@wsh-2025/client/src/features/timetable/constants/grid_size';
@@ -41,11 +40,17 @@ export const createTimetablePageStoreSlice = () => {
     },
     columnWidthRecord: {},
     currentUnixtimeMs: 0,
-    refreshCurrentUnixtimeMs: debounce(() => {
-      set(() => ({
-        currentUnixtimeMs: Date.now(),
-      }));
-    }, 50),
+    refreshCurrentUnixtimeMs: (() => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      return () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          set(() => ({
+            currentUnixtimeMs: Date.now(),
+          }));
+        }, 50);
+      };
+    })(),
     selectedProgramId: null,
     selectProgram: (program: Program | null) => {
       set(() => ({

@@ -1,5 +1,4 @@
 import { withLenses } from '@dhmk/zustand-lens';
-import merge from 'lodash/merge'
 import { createStore as createZustandStore } from 'zustand/vanilla';
 
 import { createAuthStoreSlice } from '@wsh-2025/client/src/features/auth/stores/createAuthStoreSlice';
@@ -39,7 +38,17 @@ export const createStore = ({ hydrationData }: Props) => {
     })),
   );
 
-  store.setState((s) => merge(s, hydrationData));
+  store.setState((s) => {
+    const h = hydrationData as Record<string, Record<string, unknown>> | undefined;
+    if (!h) return s;
+    const result: Record<string, unknown> = { ...s, ...h };
+    for (const key of ['features', 'pages'] as const) {
+      if (h[key] != null) {
+        result[key] = { ...(s as Record<string, Record<string, unknown>>)[key], ...h[key] };
+      }
+    }
+    return result as typeof s;
+  });
 
   return store;
 };
