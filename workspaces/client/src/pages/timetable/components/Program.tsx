@@ -13,6 +13,8 @@ import { useCurrentUnixtimeMs } from '@wsh-2025/client/src/pages/timetable/hooks
 import { useProgramById } from '@wsh-2025/client/src/features/program/hooks/useProgramById';
 import { useSelectedProgramId } from '@wsh-2025/client/src/pages/timetable/hooks/useSelectedProgramId';
 import { useStore } from '@wsh-2025/client/src/app/StoreContext';
+import { observeResize, unobserveResize } from '@wsh-2025/client/src/utils/sharedResizeObserver';
+import { observe, unobserve } from '@wsh-2025/client/src/utils/sharedIntersectionObserver';
 
 interface Props {
   height: number;
@@ -20,8 +22,6 @@ interface Props {
 }
 
 export const Program = ({ height, program }: Props): ReactElement => {
-// export const Program = ({ height, programId }: Props): ReactElement => {
-
   const width = useColumnWidth(program.channelId);
 
   const [selectedProgramId, setProgram] = useSelectedProgramId();
@@ -48,36 +48,39 @@ export const Program = ({ height, program }: Props): ReactElement => {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px' },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+
+    observe(el, (entry) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        unobserve(el);
+      }
+    });
+
+    return () => {
+      unobserve(el);
+    };
   }, []);
 
   const [shouldImageBeVisible, setShouldImageBeVisible] = useState<boolean>(false);
   useEffect(() => {
+    const titleEl = titleRef.current;
+    const imageEl = imageRef.current;
+    if (!titleEl && !imageEl) return;
+
     const check = () => {
-      const imageHeight = imageRef.current?.clientHeight ?? 0;
-      const titleHeight = titleRef.current?.clientHeight ?? 0;
+      const imageHeight = imageEl?.clientHeight ?? 0;
+      const titleHeight = titleEl?.clientHeight ?? 0;
       setShouldImageBeVisible(imageHeight <= height - titleHeight);
     };
 
-    const observer = new ResizeObserver(() => {
-      check();
-    });
-    if (titleRef.current) observer.observe(titleRef.current);
-    if (imageRef.current) observer.observe(imageRef.current);
+    if (titleEl) observeResize(titleEl, check);
+    if (imageEl) observeResize(imageEl, check);
+
     check();
 
     return () => {
-      observer.disconnect();
+      if (titleEl) unobserveResize(titleEl);
+      if (imageEl) unobserveResize(imageEl);
     };
   }, [height]);
 
