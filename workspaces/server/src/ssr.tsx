@@ -30,17 +30,23 @@ export function registerSsr(app: FastifyInstance): void {
     const request = createStandardRequest(req, reply);
 
     const store = createStore({});
-    const handler = createStaticHandler(createRoutes(store));
+    const routes = createRoutes(store);
+    const handler = createStaticHandler(routes);
     const context = await handler.query(request);
 
     if (context instanceof Response) {
       return reply.send(context);
     }
 
+    // SSR: zustandのuseSyncExternalStoreはSSRでgetInitialState(初期状態)を返すため、
+    // prefetchでstoreが更新されても反映されない。
+    // 対策: prefetch後の状態をhydrationDataとして新しいstoreを作成し直す。
+    const hydratedStore = createStore({ hydrationData: store.getState() });
+
     const router = createStaticRouter(handler.dataRoutes, context);
     const { pipe } = renderToPipeableStream(
       <StrictMode>
-        <StoreProvider createStore={() => store}>
+        <StoreProvider createStore={() => hydratedStore}>
           <StaticRouterProvider context={context} hydrate={true} router={router} />
         </StoreProvider>
       </StrictMode>,
