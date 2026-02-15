@@ -11,7 +11,7 @@ import { ProgramList } from '@wsh-2025/client/src/pages/timetable/components/Pro
 import { TimelineYAxis } from '@wsh-2025/client/src/pages/timetable/components/TimelineYAxis';
 import { useShownNewFeatureDialog } from '@wsh-2025/client/src/pages/timetable/hooks/useShownNewFeatureDialog';
 
-export const prefetchTimetablePage = async (store: ReturnType<typeof createStore>) => {
+export const prefetch = async (store: ReturnType<typeof createStore>) => {
   const since = startOfDayJST().toISOString();
   const until = endOfDayJST().toISOString();
 

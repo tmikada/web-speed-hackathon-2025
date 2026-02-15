@@ -38,37 +38,16 @@ export const createStore = ({ hydrationData }: Props) => {
     })),
   );
 
-  // store.setState((s) => {
-  //   const h = hydrationData as Record<string, Record<string, unknown>> | undefined;
-  //   if (!h) return s;
-  //   const result: Record<string, unknown> = { ...s, ...h };
-  //   for (const key of ['features', 'pages'] as const) {
-  //     if (h[key] != null) {
-  //       result[key] = { ...(s as Record<string, Record<string, unknown>>)[key], ...h[key] };
-  //     }
-  //   }
-  //   return result as typeof s;
-  // });
   store.setState((s) => {
-    const h = hydrationData as any;
+    const h = hydrationData as Record<string, Record<string, unknown>> | undefined;
     if (!h) return s;
-
-    const state = s as any;
-
-    for (const groupKey of ['features', 'pages'] as const) {
-      if (!h[groupKey]) continue;
-
-      for (const sliceKey in h[groupKey]) {
-        if (!state[groupKey][sliceKey]) continue;
-
-        Object.assign(
-          state[groupKey][sliceKey],
-          h[groupKey][sliceKey],
-        );
+    const result: Record<string, unknown> = { ...s, ...h };
+    for (const key of ['features', 'pages'] as const) {
+      if (h[key] != null) {
+        result[key] = { ...(s as Record<string, Record<string, unknown>>)[key], ...h[key] };
       }
     }
-
-    return s;
+    return result as typeof s;
   });
 
   return store;
