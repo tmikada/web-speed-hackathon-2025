@@ -18,7 +18,7 @@ export function registerSsr(app: FastifyInstance): void {
     root: [
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist'),
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../public'),
-    ],
+    ] as any, // 配列をサポートしているが型定義が古い
   });
 
   app.get('/favicon.ico', (_, reply) => {
@@ -38,10 +38,10 @@ export function registerSsr(app: FastifyInstance): void {
     }
 
     const router = createStaticRouter(handler.dataRoutes, context);
-    renderToString(
+    const html = renderToString(
       <StrictMode>
         <StoreProvider createStore={() => store}>
-          <StaticRouterProvider context={context} hydrate={false} router={router} />
+          <StaticRouterProvider context={context} hydrate={true} router={router} />
         </StoreProvider>
       </StrictMode>,
     );
@@ -51,19 +51,15 @@ export function registerSsr(app: FastifyInstance): void {
       <!DOCTYPE html>
       <html lang="ja">
         <head>
-          <meta charSet="UTF-8" />
-          <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link rel="stylesheet" href="/public/main.css" />
-          <script defer src="/public/main.js"></script>
-          </head>
-        <body></body>
+        </head>
+        <body class="size-full bg-[#000000] text-[#ffffff]">
+          <div id="root">${html}</div>
+
+        </body>
       </html>
-      <script>
-        window.__staticRouterHydrationData = ${htmlescape({
-          actionData: context.actionData,
-          loaderData: context.loaderData,
-        })};
-      </script>
     `);
 
     return reply;

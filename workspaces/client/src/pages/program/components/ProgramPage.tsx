@@ -17,7 +17,7 @@ import { PlayerController } from '@wsh-2025/client/src/pages/program/components/
 import { resizedImageUrl } from '@wsh-2025/client/src/utils/image';
 import { usePlayerRef } from '@wsh-2025/client/src/pages/program/hooks/usePlayerRef';
 
-export const prefetch = async (store: ReturnType<typeof createStore>, { programId }: Params) => {
+export const prefetchProgramPage = async (store: ReturnType<typeof createStore>, { programId }: Params) => {
   invariant(programId);
 
   const since = startOfDayJST().toISOString();

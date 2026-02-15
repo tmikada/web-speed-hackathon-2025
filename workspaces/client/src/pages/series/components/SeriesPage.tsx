@@ -10,7 +10,7 @@ import { useRecommended } from '@wsh-2025/client/src/features/recommended/hooks/
 import { SeriesEpisodeList } from '@wsh-2025/client/src/features/series/components/SeriesEpisodeList';
 import { useSeriesById } from '@wsh-2025/client/src/features/series/hooks/useSeriesById';
 
-export const prefetch = async (store: ReturnType<typeof createStore>, { seriesId }: Params) => {
+export const prefetchSeriesPage = async (store: ReturnType<typeof createStore>, { seriesId }: Params) => {
   invariant(seriesId);
   const [series, modules] = await Promise.all([
     store.getState().features.series.fetchSeriesById({ seriesId }),

@@ -14,11 +14,20 @@ declare global {
 }
 
 function main() {
-  const store = createStore({});
-  const router = createBrowserRouter(createRoutes(store), {});
+  // const store = createStore({});
+  // const router = createBrowserRouter(createRoutes(store), {});
+  const store = createStore({
+    hydrationData: window.__zustandHydrationData,
+  });
+  const router = createBrowserRouter(
+    createRoutes(store),
+    {
+      hydrationData: window.__staticRouterHydrationData,
+    }
+  );
 
   hydrateRoot(
-    document,
+    document.getElementById('root')!,
     <StrictMode>
       <StoreProvider createStore={() => store}>
         <RouterProvider router={router} />
@@ -26,5 +35,8 @@ function main() {
     </StrictMode>,
   );
 }
-
-document.addEventListener('DOMContentLoaded', main);
+console.log('root exists:', document.getElementById('root'));
+console.log('hydrationData:', window.__staticRouterHydrationData);
+console.log('zustandData:', window.__zustandHydrationData);
+// main();
+// document.addEventListener('DOMContentLoaded', main);
