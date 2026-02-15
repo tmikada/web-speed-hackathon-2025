@@ -37,7 +37,7 @@ export const EpisodePage = () => {
   invariant(episodeId);
 
   const episode = useEpisodeById({ episodeId });
-  invariant(episode);
+  if (!episode) return null;
 
   const modules = useRecommended({ referenceId: episodeId });
 

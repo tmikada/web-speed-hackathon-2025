@@ -26,7 +26,7 @@ export const SeriesPage = () => {
   invariant(seriesId);
 
   const series = useSeriesById({ seriesId });
-  invariant(series);
+  if (!series) return null;
 
   const modules = useRecommended({ referenceId: seriesId });
 

@@ -15,6 +15,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
               Component: HomePage,
               HydrateFallback: () => null,
               async loader() {
+                if (typeof window === 'undefined') return {};
                 return await prefetch(store);
               },
             };
@@ -27,6 +28,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
               Component: EpisodePage,
               HydrateFallback: () => null,
               async loader({ params }) {
+                if (typeof window === 'undefined') return {};
                 return await prefetch(store, params);
               },
             };
@@ -40,6 +42,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
               Component: ProgramPage,
               HydrateFallback: () => null,
               async loader({ params }) {
+                if (typeof window === 'undefined') return {};
                 return await prefetch(store, params);
               },
             };
@@ -53,6 +56,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
               Component: SeriesPage,
               HydrateFallback: () => null,
               async loader({ params }) {
+                if (typeof window === 'undefined') return {};
                 return await prefetch(store, params);
               },
             };
@@ -66,6 +70,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
               Component: TimetablePage,
               HydrateFallback: () => null,
               async loader() {
+                if (typeof window === 'undefined') return {};
                 return await prefetch(store);
               },
             };
@@ -79,6 +84,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
               Component: NotFoundPage,
               HydrateFallback: () => null,
               async loader() {
+                if (typeof window === 'undefined') return {};
                 return await prefetch(store);
               },
             };
@@ -89,6 +95,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
       Component: Document,
       HydrateFallback: () => null,
       async loader() {
+        if (typeof window === 'undefined') return {};
         return await prefetch(store);
       },
       path: '/',

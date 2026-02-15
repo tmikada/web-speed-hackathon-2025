@@ -39,7 +39,7 @@ export const ProgramPage = () => {
   invariant(programId);
 
   const program = useProgramById({ programId });
-  invariant(program);
+  if (!program) return null;
 
   const timetable = useTimetableById();
   const nextProgram = timetable[program.channel.id]?.find((p) => {
