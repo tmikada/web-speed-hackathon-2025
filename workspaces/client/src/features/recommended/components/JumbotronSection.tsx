@@ -12,6 +12,7 @@ import { PlayerType } from '../../player/constants/player_type';
 import { PlayerWrapper } from '../../player/interfaces/player_wrapper';
 
 import { Hoverable } from '@wsh-2025/client/src/features/layout/components/Hoverable';
+import { resizedImageUrl } from '@wsh-2025/client/src/utils/image';
 
 interface Props {
   module: ArrayValues<StandardSchemaV1.InferOutput<typeof schema.getRecommendedModulesResponse>>;
@@ -43,10 +44,19 @@ export const JumbotronSection = ({ module }: Props) => {
               </div>
 
               <Flipped stagger flipId={isTransitioning ? `episode-${episode.id}` : 0}>
-                <div className="h-full aspect-video shrink-0 grow-0">
+                <div className="relative h-full aspect-video shrink-0 grow-0">
+                  <img
+                    alt=""
+                    className="absolute inset-0 size-full object-cover"
+                    src={episode.thumbnailUrl}
+                    srcSet={`
+                      ${resizedImageUrl(episode.thumbnailUrl, 480)} 480w
+                    `}
+                    fetchPriority="high"
+                  />
                   <Player
                     loop
-                    className="size-full"
+                    className="relative size-full"
                     playerRef={playerRef}
                     playerType={PlayerType.HlsJS}
                     playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}
