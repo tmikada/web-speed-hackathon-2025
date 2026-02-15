@@ -13,6 +13,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
             const { HomePage, prefetch } = await import('@wsh-2025/client/src/pages/home/components/HomePage');
             return {
               Component: HomePage,
+              HydrateFallback: () => null,
               async loader() {
                 return await prefetch(store);
               },
@@ -24,6 +25,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
             const { EpisodePage, prefetch } = await import('@wsh-2025/client/src/pages/episode/components/EpisodePage');
             return {
               Component: EpisodePage,
+              HydrateFallback: () => null,
               async loader({ params }) {
                 return await prefetch(store, params);
               },
@@ -36,6 +38,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
             const { prefetch, ProgramPage } = await import('@wsh-2025/client/src/pages/program/components/ProgramPage');
             return {
               Component: ProgramPage,
+              HydrateFallback: () => null,
               async loader({ params }) {
                 return await prefetch(store, params);
               },
@@ -48,6 +51,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
             const { prefetch, SeriesPage } = await import('@wsh-2025/client/src/pages/series/components/SeriesPage');
             return {
               Component: SeriesPage,
+              HydrateFallback: () => null,
               async loader({ params }) {
                 return await prefetch(store, params);
               },
@@ -60,6 +64,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
             const { prefetch, TimetablePage } = await import('@wsh-2025/client/src/pages/timetable/components/TimetablePage');
             return {
               Component: TimetablePage,
+              HydrateFallback: () => null,
               async loader() {
                 return await prefetch(store);
               },
@@ -72,6 +77,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
             const { NotFoundPage, prefetch } = await import('@wsh-2025/client/src/pages/not_found/components/NotFoundPage');
             return {
               Component: NotFoundPage,
+              HydrateFallback: () => null,
               async loader() {
                 return await prefetch(store);
               },
@@ -81,6 +87,7 @@ export function createRoutes(store: ReturnType<typeof createStore>): RouteObject
         },
       ],
       Component: Document,
+      HydrateFallback: () => null,
       async loader() {
         return await prefetch(store);
       },

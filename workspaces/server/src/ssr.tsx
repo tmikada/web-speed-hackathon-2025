@@ -7,10 +7,10 @@ import { createRoutes } from '@wsh-2025/client/src/app/createRoutes';
 import { createStore } from '@wsh-2025/client/src/app/createStore';
 import type { FastifyInstance } from 'fastify';
 import { createStandardRequest } from 'fastify-standard-request-reply';
-import htmlescape from 'htmlescape';
 import { StrictMode } from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToPipeableStream } from 'react-dom/server';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
+import { PassThrough } from 'node:stream';
 
 export function registerSsr(app: FastifyInstance): void {
   app.register(fastifyStatic, {
@@ -38,33 +38,34 @@ export function registerSsr(app: FastifyInstance): void {
     }
 
     const router = createStaticRouter(handler.dataRoutes, context);
-    renderToString(
+    const { pipe } = renderToPipeableStream(
       <StrictMode>
         <StoreProvider createStore={() => store}>
-          <StaticRouterProvider context={context} hydrate={false} router={router} />
+          <StaticRouterProvider context={context} hydrate={true} router={router} />
         </StoreProvider>
       </StrictMode>,
+      {
+        onShellReady() {
+          const passthrough = new PassThrough();
+          reply.type('text/html').send(passthrough);
+          passthrough.write('<!DOCTYPE html>');
+          pipe(passthrough);
+        },
+        onShellError() {
+          // フォールバック: 空HTMLを返してCSRにフォールバック
+          reply.status(500).type('text/html').send(`
+            <!DOCTYPE html>
+            <html lang="ja">
+              <head><script defer src="/public/main.js"></script></head>
+              <body></body>
+            </html>
+          `);
+        },
+        onError(error) {
+          console.error('SSR streaming error:', error);
+        },
+      }
     );
-
-
-    reply.type('text/html').send(/* html */ `
-      <!DOCTYPE html>
-      <html lang="ja">
-        <head>
-          <meta charSet="UTF-8" />
-          <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-          <link rel="stylesheet" href="/public/main.css" />
-          <script defer src="/public/main.js"></script>
-          </head>
-        <body></body>
-      </html>
-      <script>
-        window.__staticRouterHydrationData = ${htmlescape({
-          actionData: context.actionData,
-          loaderData: context.loaderData,
-        })};
-      </script>
-    `);
 
     return reply;
   });
