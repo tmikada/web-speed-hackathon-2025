@@ -5,13 +5,15 @@ import UnoCSS from '@unocss/webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import webpack from 'webpack';
 
-const useAnalyzer = process.env.ANALYZE === 'true';
+const isDevelopment = process.env['NODE_ENV'] === 'development';
+// const useAnalyzer = process.env['ANALYZE'] === 'true';
+const useAnalyzer = isDevelopment;
 
 /** @type {import('webpack').Configuration} */
 const config = {
-  devtool: false,
+  devtool: isDevelopment ? 'eval-cheap-module-source-map' : false,
   entry: './src/main.tsx',
-  mode: 'production',
+  mode: isDevelopment ? 'development' : 'production',
   module: {
     rules: [
       {
