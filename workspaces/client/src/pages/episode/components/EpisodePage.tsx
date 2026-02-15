@@ -93,8 +93,17 @@ export const EpisodePage = () => {
                 }
               >
                 <div className="relative size-full">
+                  <img
+                    alt=""
+                    className="aspect-video absolute inset-0 size-full object-cover"
+                    src={episode.thumbnailUrl}
+                    srcSet={`
+                      ${resizedImageUrl(episode.thumbnailUrl, 1280)} 1280w
+                    `}
+                    fetchPriority="high"
+                  />
                   <Player
-                    className="size-full"
+                    className="aspect-video size-full"
                     playerRef={playerRef}
                     playerType={PlayerType.HlsJS}
                     playlistUrl={`/streams/episode/${episode.id}/playlist.m3u8`}

@@ -115,8 +115,17 @@ export const ProgramPage = () => {
               </div>
             ) : isBroadcastStarted ? (
               <div className="relative size-full">
+                <img
+                  alt=""
+                  className="aspect-video absolute inset-0 size-full object-cover"
+                  src={program.thumbnailUrl}
+                  srcSet={`
+                    ${resizedImageUrl(program.thumbnailUrl, 1280)} 1280w
+                  `}
+                  fetchPriority="high"
+                />
                 <Player
-                  className="size-full"
+                  className="aspect-video size-full"
                   playerRef={playerRef}
                   playerType={PlayerType.HlsJS}
                   playlistUrl={`/streams/channel/${program.channel.id}/playlist.m3u8`}
