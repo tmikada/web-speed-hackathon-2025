@@ -1,6 +1,7 @@
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import * as schema from '@wsh-2025/schema/src/api/schema';
 import { ReactElement, useEffect, useRef, useState } from 'react';
+import Ellipsis from 'react-ellipsis-component';
 import { ArrayValues } from 'type-fest';
 
 import { formatDateTimeJST } from '@wsh-2025/client/src/utils/datetime';
@@ -103,7 +104,7 @@ export const Program = ({ height, program }: Props): ReactElement => {
               <div
                 className={`grow-1 shrink-1 overflow-hidden text-[14px] font-bold text-[${isBroadcasting ? '#212121' : '#ffffff'}]`}
               >
-                <span className="line-clamp-3">{program.title}</span>
+                <Ellipsis ellipsis reflowOnResize maxLine={3} text={program.title} visibleLine={3} />
               </div>
             </div>
             <div className={`opacity-${shouldImageBeVisible ? 100 : 0} w-full`}>
