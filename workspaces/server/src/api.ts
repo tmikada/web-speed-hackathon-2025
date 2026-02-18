@@ -547,7 +547,13 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
               return asc(item.order);
             },
             with: {
-              series: true,
+              series: {
+                with: {
+                  episodes: {
+                    limit: 1,
+                  }
+                },
+              },
               episode: {
                 with: {
                   series: true,
@@ -557,7 +563,18 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
           },
         },
       });
-      reply.code(200).send(modules);
+      const processedModules = modules.map((module) => {
+        if (module.type !== 'carousel') return module;
+        return {
+          ...module,
+          items: module.items.map((item) => {
+            if (!item.episode) return item;
+            const { description: _, ...rest } = item.episode;
+            return { ...item, episode: rest };
+          }),
+        };
+      });
+      reply.code(200).send(processedModules);
       return reply;
     },
   });
