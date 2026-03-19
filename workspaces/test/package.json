@@ -2,7 +2,8 @@
   "name": "@wsh-2025/test",
   "private": true,
   "scripts": {
-    "test": "wireit"
+    "test": "wireit",
+    "test-snap": "wireit"
   },
   "devDependencies": {
     "@playwright/test": "1.50.1",
@@ -13,6 +14,14 @@
   "wireit": {
     "test": {
       "command": "playwright test",
+      "files": [
+        "../../pnpm-lock.yaml",
+        "../schema/src/**/*",
+        "./src/**/*"
+      ]
+    },
+    "test-snap": {
+      "command": "playwright test --update-snapshots",
       "files": [
         "../../pnpm-lock.yaml",
         "../schema/src/**/*",

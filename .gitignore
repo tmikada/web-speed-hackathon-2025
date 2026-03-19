@@ -219,3 +219,10 @@ $RECYCLE.BIN/
 
 # Wireit
 .wireit
+
+
+.agents
+.claude
+
+# Generated resized images
+# public/images-resized
